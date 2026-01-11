@@ -24,3 +24,6 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# wrangler config with secrets (use .wrangler.example.jsonc instead)
+wrangler.jsonc

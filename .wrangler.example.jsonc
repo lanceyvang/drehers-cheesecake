@@ -1,3 +1,5 @@
+// Copy this file to wrangler.jsonc and fill in your actual IDs
+// DO NOT commit wrangler.jsonc with real IDs to version control
 {
 	"name": "drehers-cheesecake",
 	"main": "dist/_worker.js/index.js",
@@ -16,7 +18,7 @@
 		{
 			"binding": "DB",
 			"database_name": "drehers-cheesecake-db",
-			"database_id": "ba52d503-93d6-43bc-9687-66b2b0946f2d",
+			"database_id": "your-d1-database-id-here",
 			"migrations_dir": "./drizzle"
 		}
 	],
@@ -24,13 +26,20 @@
 	"kv_namespaces": [
 		{
 			"binding": "SESSION",
-			"id": "9ced1bff83c142afbb0bf796db7e5fe6"
+			"id": "your-kv-namespace-id-here"
 		}
 	],
 	"vars": {
 		"SITE_URL": "https://drehers.lokithor.org"
 	}
-	// Google OAuth and Payment secrets - set via: wrangler secret put GOOGLE_CLIENT_ID
-	// and: wrangler secret put GOOGLE_CLIENT_SECRET
-	// Also set other secrets with: wrangler secret put SECRET_NAME
+	// Secrets to set via: wrangler secret put SECRET_NAME
+	// - GOOGLE_CLIENT_ID
+	// - GOOGLE_CLIENT_SECRET
+	// - STRIPE_SECRET_KEY
+	// - STRIPE_PUBLISHABLE_KEY
+	// - STRIPE_WEBHOOK_SECRET
+	// - PAYPAL_CLIENT_ID
+	// - PAYPAL_CLIENT_SECRET
+	// - RESEND_API_KEY
+	// - AUTH_SECRET
 }
