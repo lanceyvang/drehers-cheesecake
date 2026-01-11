@@ -36,18 +36,33 @@ Copy the `id` from the output and update `wrangler.jsonc`.
 
 ### 1.4 Update wrangler.jsonc
 
-Replace placeholder IDs with your actual IDs:
+**IMPORTANT:** DO NOT commit `wrangler.jsonc` to version control if it contains real IDs.
 
-```jsonc
-{
-  "d1_databases": [
-    {
-      "binding": "DB",
-      "database_name": "drehers-cheesecake-db",
-      "database_id": "your-actual-database-id"  // <-- Update this
-    }
-  ],
-  "kv_namespaces": [
+1. Copy `.wrangler.example.jsonc` to `wrangler.jsonc`:
+   ```bash
+   cp .wrangler.example.jsonc wrangler.jsonc
+   ```
+
+2. Replace the placeholder IDs with your actual IDs from steps 1.2 and 1.3:
+   ```jsonc
+   {
+     "d1_databases": [
+       {
+         "binding": "DB",
+         "database_name": "drehers-cheesecake-db",
+         "database_id": "your-actual-database-id"  // <-- Update this
+       }
+     ],
+     "kv_namespaces": [
+       {
+         "binding": "SESSION",
+         "id": "your-actual-kv-id"  // <-- Update this
+       }
+     ]
+   }
+   ```
+
+3. The `.gitignore` already excludes `wrangler.jsonc`, so it won't be committed. Other developers should copy `.wrangler.example.jsonc` and fill in their own IDs.
     {
       "binding": "SESSION",
       "id": "your-actual-kv-id"  // <-- Update this
