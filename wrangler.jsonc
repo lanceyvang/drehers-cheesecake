@@ -26,7 +26,7 @@
   "kv_namespaces": [
     {
       "binding": "SESSION",
-      "id": "YOUR_KV_NAMESPACE_ID_HERE"
+      "id": "9ced1bff83c142afbb0bf796db7e5fe6"
     }
   ],
   "vars": {
