@@ -256,8 +256,6 @@ a:hover {
 .hero-overlay {
   position: absolute;
   inset: 0;
-  background: url('/images/pattern.svg') repeat;
-  opacity: 0.05;
 }
 
 /* Navigation */
