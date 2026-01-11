@@ -1,0 +1,35 @@
+{
+  "name": "drehers-cheesecake",
+  "main": "dist/_worker.js/index.js",
+  "compatibility_date": "2026-01-11",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "assets": {
+    "binding": "ASSETS",
+    "directory": "./dist"
+  },
+  "observability": {
+    "enabled": true
+  },
+  // D1 Database - Run: npx wrangler d1 create drehers-cheesecake-db
+  // Then update database_id below
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "drehers-cheesecake-db",
+      "database_id": "YOUR_DATABASE_ID_HERE",
+      "migrations_dir": "./drizzle"
+    }
+  ],
+  // KV for sessions (used by @astrojs/cloudflare)
+  "kv_namespaces": [
+    {
+      "binding": "SESSION",
+      "id": "YOUR_KV_NAMESPACE_ID_HERE"
+    }
+  ],
+  "vars": {
+    "SITE_URL": "https://dreherscheesecake.com"
+  }
+}

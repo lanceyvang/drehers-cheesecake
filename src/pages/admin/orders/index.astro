@@ -1,0 +1,371 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+
+export const prerender = false;
+---
+
+<AdminLayout title="Order Management">
+  <div class="p-6 md:p-8">
+    <!-- Page Header -->
+    <div class="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div>
+        <h1 class="text-2xl font-bold text-gray-900">Orders</h1>
+        <p class="text-gray-500">Manage and track all customer orders</p>
+      </div>
+      
+      <div class="flex items-center gap-3">
+        <input 
+          type="text" 
+          placeholder="Search orders..." 
+          class="px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+          id="order-search"
+        />
+        <select id="status-filter" class="px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+          <option value="">All Statuses</option>
+          <option value="pending">Pending</option>
+          <option value="deposit_paid">Deposit Paid</option>
+          <option value="confirmed">Confirmed</option>
+          <option value="preparing">Preparing</option>
+          <option value="ready">Ready</option>
+          <option value="delivered">Delivered</option>
+          <option value="cancelled">Cancelled</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Orders Table -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead class="bg-gray-50 border-b border-gray-100">
+            <tr>
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Order</th>
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Customer</th>
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Date</th>
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Delivery</th>
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Total</th>
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="orders-table-body" class="divide-y divide-gray-100">
+            <tr>
+              <td colspan="7" class="px-6 py-8 text-center text-gray-500">
+                <div class="inline-block w-6 h-6 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin mb-2"></div>
+                <p>Loading orders...</p>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Order Detail Modal -->
+  <div id="order-modal" class="fixed inset-0 z-50 hidden">
+    <div class="absolute inset-0 bg-black/50" id="modal-backdrop"></div>
+    <div class="absolute right-0 top-0 h-full w-full max-w-lg bg-white shadow-xl overflow-y-auto">
+      <div class="p-6">
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-xl font-bold text-gray-900" id="modal-order-number">Order Details</h2>
+          <button id="close-modal" class="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+            <svg class="w-5 h-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        
+        <div id="modal-content">
+          <!-- Order details will be loaded here -->
+        </div>
+        
+        <!-- Status Update -->
+        <div class="mt-6 pt-6 border-t border-gray-200">
+          <h3 class="font-semibold text-gray-900 mb-3">Update Status</h3>
+          <div class="flex gap-2">
+            <select id="status-select" class="flex-1 px-3 py-2 border border-gray-200 rounded-lg">
+              <option value="pending">Pending</option>
+              <option value="deposit_paid">Deposit Paid</option>
+              <option value="confirmed">Confirmed</option>
+              <option value="preparing">Preparing</option>
+              <option value="ready">Ready for Delivery</option>
+              <option value="delivered">Delivered</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
+            <button id="update-status-btn" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+              Update
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</AdminLayout>
+
+<script>
+  // Mock orders data (in production, fetch from API)
+  const mockOrders = [
+    {
+      orderNumber: 'DRH-ABC123',
+      customer: { name: 'John Doe', email: 'john@example.com', phone: '(718) 555-1234' },
+      items: [{ name: 'Classic NY Cheesecake', quantity: 1, price: 65 }],
+      total: 65,
+      status: 'pending',
+      createdAt: new Date().toISOString(),
+      delivery: { date: 'Jan 15, 2026', borough: 'Brooklyn', address: '123 Main St' },
+    },
+    {
+      orderNumber: 'DRH-DEF456',
+      customer: { name: 'Sarah Smith', email: 'sarah@example.com', phone: '(917) 555-5678' },
+      items: [{ name: 'Custom Wedding Cake', quantity: 1, price: 350 }],
+      total: 350,
+      depositPaid: true,
+      depositAmount: 175,
+      status: 'deposit_paid',
+      createdAt: new Date(Date.now() - 86400000).toISOString(),
+      delivery: { date: 'Jan 20, 2026', borough: 'Manhattan', address: '456 Park Ave' },
+    },
+    {
+      orderNumber: 'DRH-GHI789',
+      customer: { name: 'Mike Johnson', email: 'mike@example.com', phone: '(347) 555-9012' },
+      items: [
+        { name: 'Strawberry Swirl Cheesecake', quantity: 1, price: 70 },
+        { name: 'Red Velvet Cupcakes (12)', quantity: 1, price: 36 },
+      ],
+      total: 106,
+      status: 'preparing',
+      createdAt: new Date(Date.now() - 172800000).toISOString(),
+      delivery: { date: 'Jan 12, 2026', borough: 'Queens', address: '789 Queens Blvd' },
+    },
+    {
+      orderNumber: 'DRH-JKL012',
+      customer: { name: 'Emily Brown', email: 'emily@example.com', phone: '(646) 555-3456' },
+      items: [{ name: 'Vegan Chocolate Cake', quantity: 1, price: 85 }],
+      total: 85,
+      status: 'delivered',
+      createdAt: new Date(Date.now() - 432000000).toISOString(),
+      delivery: { date: 'Jan 8, 2026', borough: 'Brooklyn', address: '321 Atlantic Ave' },
+    },
+  ];
+
+  const statusClasses: Record<string, string> = {
+    pending: 'bg-yellow-100 text-yellow-800',
+    deposit_paid: 'bg-blue-100 text-blue-800',
+    confirmed: 'bg-green-100 text-green-800',
+    preparing: 'bg-purple-100 text-purple-800',
+    ready: 'bg-indigo-100 text-indigo-800',
+    delivered: 'bg-emerald-100 text-emerald-800',
+    cancelled: 'bg-red-100 text-red-800',
+  };
+
+  const statusLabels: Record<string, string> = {
+    pending: 'Pending',
+    deposit_paid: 'Deposit Paid',
+    confirmed: 'Confirmed',
+    preparing: 'Preparing',
+    ready: 'Ready',
+    delivered: 'Delivered',
+    cancelled: 'Cancelled',
+  };
+
+  function formatDate(dateStr: string): string {
+    return new Date(dateStr).toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    });
+  }
+
+  function renderOrders(orders: typeof mockOrders) {
+    const tbody = document.getElementById('orders-table-body');
+    if (!tbody) return;
+
+    if (orders.length === 0) {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="7" class="px-6 py-8 text-center text-gray-500">No orders found</td>
+        </tr>
+      `;
+      return;
+    }
+
+    tbody.innerHTML = orders.map(order => `
+      <tr class="hover:bg-gray-50 cursor-pointer" data-order="${order.orderNumber}">
+        <td class="px-6 py-4">
+          <span class="font-medium text-gray-900">${order.orderNumber}</span>
+        </td>
+        <td class="px-6 py-4">
+          <div>
+            <p class="font-medium text-gray-900">${order.customer.name}</p>
+            <p class="text-sm text-gray-500">${order.customer.email}</p>
+          </div>
+        </td>
+        <td class="px-6 py-4 text-gray-600">
+          ${formatDate(order.createdAt)}
+        </td>
+        <td class="px-6 py-4">
+          <div>
+            <p class="text-gray-900">${order.delivery.date}</p>
+            <p class="text-sm text-gray-500">${order.delivery.borough}</p>
+          </div>
+        </td>
+        <td class="px-6 py-4">
+          <span class="font-medium text-gray-900">$${order.total.toFixed(2)}</span>
+          ${order.depositPaid ? `<p class="text-xs text-blue-600">Deposit: $${order.depositAmount?.toFixed(2)}</p>` : ''}
+        </td>
+        <td class="px-6 py-4">
+          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusClasses[order.status]}">
+            ${statusLabels[order.status]}
+          </span>
+        </td>
+        <td class="px-6 py-4">
+          <button class="text-blue-600 hover:text-blue-800 text-sm font-medium view-order-btn" data-order="${order.orderNumber}">
+            View
+          </button>
+        </td>
+      </tr>
+    `).join('');
+
+    // Add click handlers
+    document.querySelectorAll('.view-order-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const orderNumber = (btn as HTMLElement).dataset.order;
+        openOrderModal(orderNumber!);
+      });
+    });
+
+    document.querySelectorAll('#orders-table-body tr[data-order]').forEach(row => {
+      row.addEventListener('click', () => {
+        const orderNumber = (row as HTMLElement).dataset.order;
+        openOrderModal(orderNumber!);
+      });
+    });
+  }
+
+  function openOrderModal(orderNumber: string) {
+    const order = mockOrders.find(o => o.orderNumber === orderNumber);
+    if (!order) return;
+
+    const modal = document.getElementById('order-modal');
+    const modalContent = document.getElementById('modal-content');
+    const modalOrderNumber = document.getElementById('modal-order-number');
+    const statusSelect = document.getElementById('status-select') as HTMLSelectElement;
+
+    if (modalOrderNumber) modalOrderNumber.textContent = order.orderNumber;
+    if (statusSelect) statusSelect.value = order.status;
+
+    if (modalContent) {
+      modalContent.innerHTML = `
+        <div class="space-y-6">
+          <!-- Customer Info -->
+          <div>
+            <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-2">Customer</h3>
+            <p class="font-medium text-gray-900">${order.customer.name}</p>
+            <p class="text-gray-600">${order.customer.email}</p>
+            <p class="text-gray-600">${order.customer.phone}</p>
+          </div>
+
+          <!-- Delivery Info -->
+          <div>
+            <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-2">Delivery</h3>
+            <p class="font-medium text-gray-900">${order.delivery.date}</p>
+            <p class="text-gray-600">${order.delivery.address}</p>
+            <p class="text-gray-600">${order.delivery.borough}</p>
+          </div>
+
+          <!-- Order Items -->
+          <div>
+            <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-2">Items</h3>
+            <div class="space-y-2">
+              ${order.items.map(item => `
+                <div class="flex justify-between py-2 border-b border-gray-100">
+                  <div>
+                    <p class="font-medium text-gray-900">${item.name}</p>
+                    <p class="text-sm text-gray-500">Qty: ${item.quantity}</p>
+                  </div>
+                  <p class="font-medium text-gray-900">$${(item.price * item.quantity).toFixed(2)}</p>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+
+          <!-- Totals -->
+          <div class="bg-gray-50 rounded-lg p-4">
+            <div class="flex justify-between mb-2">
+              <span class="text-gray-600">Subtotal</span>
+              <span class="font-medium">$${order.total.toFixed(2)}</span>
+            </div>
+            <div class="flex justify-between mb-2">
+              <span class="text-gray-600">Delivery</span>
+              <span class="font-medium text-green-600">FREE</span>
+            </div>
+            ${order.depositPaid ? `
+            <div class="flex justify-between mb-2 text-blue-600">
+              <span>Deposit Paid</span>
+              <span class="font-medium">-$${order.depositAmount?.toFixed(2)}</span>
+            </div>
+            <div class="flex justify-between pt-2 border-t border-gray-200">
+              <span class="font-semibold">Balance Due</span>
+              <span class="font-bold text-lg">$${(order.total - (order.depositAmount || 0)).toFixed(2)}</span>
+            </div>
+            ` : `
+            <div class="flex justify-between pt-2 border-t border-gray-200">
+              <span class="font-semibold">Total</span>
+              <span class="font-bold text-lg">$${order.total.toFixed(2)}</span>
+            </div>
+            `}
+          </div>
+        </div>
+      `;
+    }
+
+    modal?.classList.remove('hidden');
+  }
+
+  function closeModal() {
+    document.getElementById('order-modal')?.classList.add('hidden');
+  }
+
+  // Event listeners
+  document.getElementById('modal-backdrop')?.addEventListener('click', closeModal);
+  document.getElementById('close-modal')?.addEventListener('click', closeModal);
+
+  document.getElementById('update-status-btn')?.addEventListener('click', () => {
+    const statusSelect = document.getElementById('status-select') as HTMLSelectElement;
+    const newStatus = statusSelect.value;
+    // In production, this would call an API
+    alert(`Status updated to: ${statusLabels[newStatus]}`);
+    closeModal();
+    // Refresh orders list
+    loadOrders();
+  });
+
+  // Filter handlers
+  document.getElementById('status-filter')?.addEventListener('change', loadOrders);
+  document.getElementById('order-search')?.addEventListener('input', loadOrders);
+
+  function loadOrders() {
+    const statusFilter = (document.getElementById('status-filter') as HTMLSelectElement)?.value;
+    const searchQuery = (document.getElementById('order-search') as HTMLInputElement)?.value.toLowerCase();
+
+    let filtered = mockOrders;
+
+    if (statusFilter) {
+      filtered = filtered.filter(o => o.status === statusFilter);
+    }
+
+    if (searchQuery) {
+      filtered = filtered.filter(o => 
+        o.orderNumber.toLowerCase().includes(searchQuery) ||
+        o.customer.name.toLowerCase().includes(searchQuery) ||
+        o.customer.email.toLowerCase().includes(searchQuery)
+      );
+    }
+
+    renderOrders(filtered);
+  }
+
+  // Initial load
+  loadOrders();
+</script>

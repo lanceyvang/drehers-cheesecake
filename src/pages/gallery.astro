@@ -1,0 +1,335 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+// Gallery images - in production, these would come from the database
+const galleryImages = [
+  {
+    id: '1',
+    imageUrl: '/images/products/8a848a8c-bb25-421f-9e8b-5cc4bc0a0961.png',
+    title: 'Lemon Blueberry Crumb Cheesecake',
+    category: 'Cheesecake',
+  },
+  {
+    id: '2',
+    imageUrl: '/images/products/26bf0a94-711f-4f0d-9e26-c9e880eafcd8.png',
+    title: 'Cookie Butter Cheesecake',
+    category: 'Cheesecake',
+  },
+  {
+    id: '3',
+    imageUrl: '/images/products/2f5d8a83-67cb-4ee1-a172-4ad3089ccb6f.png',
+    title: 'Vanilla Bean Cheesecake',
+    category: 'Cheesecake',
+  },
+  {
+    id: '4',
+    imageUrl: '/images/products/02847297-5134-4a68-a429-f167b545c7bf.png',
+    title: 'Heart Shaped Custom Cake',
+    category: 'Custom Cakes',
+  },
+  {
+    id: '5',
+    imageUrl: '/images/products/b67f5ac2-5104-4bf7-9d66-bd1d318f84f9.png',
+    title: 'Venus Et Fleur Custom Cake',
+    category: 'Custom Cakes',
+  },
+  {
+    id: '6',
+    imageUrl: '/images/products/a2e8151d-a15f-4ad3-8f0c-e6aa5b90fbeb.png',
+    title: 'Floral Buttercream Cake',
+    category: 'Custom Cakes',
+  },
+  {
+    id: '7',
+    imageUrl: '/images/products/68236334-bffc-4f57-825f-cf0762b63287.png',
+    title: 'Birthday Celebration Cake',
+    category: 'Custom Cakes',
+  },
+  {
+    id: '8',
+    imageUrl: '/images/products/5e75335b-461b-45e6-831c-417095e6b247.png',
+    title: 'Strawberry Creation',
+    category: 'Cheesecake',
+  },
+  {
+    id: '9',
+    imageUrl: '/images/products/7c3b14e4-ba1b-4c6e-a1b6-003154d430a5.png',
+    title: 'Red Velvet Cupcakes',
+    category: 'Cupcakes',
+  },
+  {
+    id: '10',
+    imageUrl: '/images/products/6a28edc0-0435-4444-9668-254dc8024327.png',
+    title: 'Cupcake Assortment Board',
+    category: 'Cupcakes',
+  },
+  {
+    id: '11',
+    imageUrl: '/images/products/d7501441-b159-43b2-a5e0-dbefcb84b7e4.png',
+    title: 'Vegan Custom Cake',
+    category: 'Vegan',
+  },
+  {
+    id: '12',
+    imageUrl: '/images/products/1978a125-68b7-4459-b37d-4983b6bfd230.png',
+    title: "Men's Tux Cake",
+    category: 'Custom Cakes',
+  },
+  {
+    id: '13',
+    imageUrl: '/images/products/0f3acf1c-cd8a-4908-8de8-04609cd9b229.png',
+    title: "7\" Men's Tux Cake",
+    category: 'Custom Cakes',
+  },
+  {
+    id: '14',
+    imageUrl: '/images/products/5dd8f414-bc89-4b7c-b661-5ab8d30f66c6.png',
+    title: '9" Custom Cake',
+    category: 'Custom Cakes',
+  },
+  {
+    id: '15',
+    imageUrl: '/images/products/e2605246-6c12-4c8e-8026-b54dd59b9c51.png',
+    title: 'Classic Pound Cake',
+    category: 'Cheesecake',
+  },
+  {
+    id: '16',
+    imageUrl: '/images/products/9fce269d-9a99-40e5-b28e-ffa80c022385.png',
+    title: 'Lemon Pound Cake',
+    category: 'Cheesecake',
+  },
+  {
+    id: '17',
+    imageUrl: '/images/products/8350385b-dfa4-4ba0-a9e6-a60407ecd441.png',
+    title: 'Custom Creation',
+    category: 'Custom Cakes',
+  },
+];
+
+const categories = ['All', 'Cheesecake', 'Custom Cakes', 'Cupcakes', 'Vegan', 'Process'];
+---
+
+<Layout title="Gallery" description="Browse our gallery of handcrafted cheesecakes, custom cakes, and cupcakes.">
+  <!-- Hero Section -->
+  <section class="pt-32 pb-16 bg-gradient-to-b from-cream to-cream-light">
+    <div class="container">
+      <div class="text-center">
+        <p class="font-accent text-lg text-gold-dark italic mb-2">Our Creations</p>
+        <h1 class="font-display text-4xl md:text-5xl font-bold text-chocolate mb-4">
+          Gallery
+        </h1>
+        <p class="text-lg text-slate max-w-2xl mx-auto">
+          A showcase of our handcrafted cheesecakes, stunning custom cakes, and delightful cupcakes.
+          Every creation is made with love in Brooklyn.
+        </p>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Filter Tabs -->
+  <section class="py-6 bg-white border-b border-cream-dark sticky top-16 z-40">
+    <div class="container">
+      <div class="flex items-center justify-center gap-2 flex-wrap">
+        {categories.map((cat, i) => (
+          <button 
+            class:list={[
+              "filter-btn px-4 py-2 rounded-full text-sm font-medium transition-colors",
+              i === 0 ? "bg-chocolate text-cream active" : "bg-cream text-chocolate hover:bg-cream-dark"
+            ]}
+            data-category={cat.toLowerCase()}
+          >
+            {cat}
+          </button>
+        ))}
+      </div>
+    </div>
+  </section>
+  
+  <!-- Gallery Grid -->
+  <section class="py-16 bg-cream-light">
+    <div class="container">
+      <div id="gallery-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {galleryImages.map((image) => (
+          <div 
+            class="gallery-item group relative aspect-square rounded-2xl overflow-hidden cursor-pointer"
+            data-category={image.category.toLowerCase()}
+          >
+            <img 
+              src={image.imageUrl} 
+              alt={image.title}
+              class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+              loading="lazy"
+            />
+            
+            <!-- Overlay -->
+            <div class="absolute inset-0 bg-gradient-to-t from-chocolate/80 via-chocolate/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              <div class="absolute bottom-0 left-0 right-0 p-6">
+                <span class="text-xs font-medium text-gold uppercase tracking-wider">
+                  {image.category}
+                </span>
+                <h3 class="font-display text-lg font-semibold text-cream mt-1">
+                  {image.title}
+                </h3>
+              </div>
+            </div>
+            
+            <!-- Expand Icon -->
+            <div class="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/90 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform translate-y-2 group-hover:translate-y-0">
+              <svg class="w-5 h-5 text-chocolate" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607zM10.5 7.5v6m3-3h-6" />
+              </svg>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+  
+  <!-- Lightbox Modal -->
+  <div id="lightbox" class="fixed inset-0 z-50 hidden bg-black/95 flex items-center justify-center p-4">
+    <button id="lightbox-close" class="absolute top-6 right-6 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors">
+      <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+    
+    <button id="lightbox-prev" class="absolute left-4 md:left-8 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors">
+      <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+      </svg>
+    </button>
+    
+    <button id="lightbox-next" class="absolute right-4 md:right-8 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors">
+      <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+      </svg>
+    </button>
+    
+    <div class="max-w-5xl max-h-[85vh]">
+      <img id="lightbox-image" src="" alt="" class="max-w-full max-h-[85vh] object-contain rounded-lg" />
+      <div class="text-center mt-4">
+        <p id="lightbox-title" class="text-white font-display text-xl"></p>
+        <p id="lightbox-category" class="text-gold text-sm mt-1"></p>
+      </div>
+    </div>
+  </div>
+  
+  <!-- CTA Section -->
+  <section class="py-16 bg-chocolate text-cream">
+    <div class="container text-center">
+      <h2 class="font-display text-3xl md:text-4xl font-bold mb-4">
+        Want to See Your Creation Here?
+      </h2>
+      <p class="text-cream/80 text-lg mb-8 max-w-2xl mx-auto">
+        Order your custom cake or cheesecake and share your photos with us!
+        Tag us on Instagram @DrehersCheesecake
+      </p>
+      <div class="flex flex-wrap justify-center gap-4">
+        <a href="/products" class="btn btn-primary">
+          Order Now
+        </a>
+        <a href="https://instagram.com/DrehersCheesecake" target="_blank" rel="noopener noreferrer" class="btn border-2 border-cream text-cream hover:bg-cream hover:text-chocolate">
+          Follow on Instagram
+        </a>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<script>
+  // Filter functionality
+  const filterBtns = document.querySelectorAll('.filter-btn');
+  const galleryItems = document.querySelectorAll('.gallery-item');
+  
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      // Update active button
+      filterBtns.forEach(b => {
+        b.classList.remove('bg-chocolate', 'text-cream', 'active');
+        b.classList.add('bg-cream', 'text-chocolate');
+      });
+      btn.classList.remove('bg-cream', 'text-chocolate');
+      btn.classList.add('bg-chocolate', 'text-cream', 'active');
+      
+      // Filter items
+      const category = (btn as HTMLButtonElement).dataset.category;
+      
+      galleryItems.forEach(item => {
+        const itemCategory = (item as HTMLElement).dataset.category;
+        if (category === 'all' || itemCategory === category) {
+          (item as HTMLElement).style.display = 'block';
+        } else {
+          (item as HTMLElement).style.display = 'none';
+        }
+      });
+    });
+  });
+  
+  // Lightbox functionality
+  const lightbox = document.getElementById('lightbox');
+  const lightboxImage = document.getElementById('lightbox-image') as HTMLImageElement;
+  const lightboxTitle = document.getElementById('lightbox-title');
+  const lightboxCategory = document.getElementById('lightbox-category');
+  const lightboxClose = document.getElementById('lightbox-close');
+  const lightboxPrev = document.getElementById('lightbox-prev');
+  const lightboxNext = document.getElementById('lightbox-next');
+  
+  let currentIndex = 0;
+  const images = Array.from(galleryItems).map(item => ({
+    src: item.querySelector('img')?.src || '',
+    title: item.querySelector('h3')?.textContent || '',
+    category: item.querySelector('span')?.textContent || '',
+  }));
+  
+  function openLightbox(index: number) {
+    currentIndex = index;
+    updateLightbox();
+    lightbox?.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+  }
+  
+  function closeLightbox() {
+    lightbox?.classList.add('hidden');
+    document.body.style.overflow = '';
+  }
+  
+  function updateLightbox() {
+    const image = images[currentIndex];
+    if (lightboxImage) lightboxImage.src = image.src;
+    if (lightboxTitle) lightboxTitle.textContent = image.title;
+    if (lightboxCategory) lightboxCategory.textContent = image.category;
+  }
+  
+  function nextImage() {
+    currentIndex = (currentIndex + 1) % images.length;
+    updateLightbox();
+  }
+  
+  function prevImage() {
+    currentIndex = (currentIndex - 1 + images.length) % images.length;
+    updateLightbox();
+  }
+  
+  galleryItems.forEach((item, index) => {
+    item.addEventListener('click', () => openLightbox(index));
+  });
+  
+  lightboxClose?.addEventListener('click', closeLightbox);
+  lightboxNext?.addEventListener('click', nextImage);
+  lightboxPrev?.addEventListener('click', prevImage);
+  
+  // Keyboard navigation
+  document.addEventListener('keydown', (e) => {
+    if (lightbox?.classList.contains('hidden')) return;
+    
+    if (e.key === 'Escape') closeLightbox();
+    if (e.key === 'ArrowRight') nextImage();
+    if (e.key === 'ArrowLeft') prevImage();
+  });
+  
+  // Close on background click
+  lightbox?.addEventListener('click', (e) => {
+    if (e.target === lightbox) closeLightbox();
+  });
+</script>

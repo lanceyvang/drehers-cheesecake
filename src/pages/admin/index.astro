@@ -1,0 +1,207 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+
+// Admin dashboard - server-rendered for real-time data
+export const prerender = false;
+---
+
+<AdminLayout title="Admin Dashboard">
+  <div class="p-6 md:p-8">
+    <!-- Page Header -->
+    <div class="mb-8">
+      <h1 class="text-2xl font-bold text-gray-900">Dashboard</h1>
+      <p class="text-gray-500">Welcome back! Here's an overview of your store.</p>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <!-- Total Orders -->
+      <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+        <div class="flex items-center justify-between mb-4">
+          <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+            <svg class="w-6 h-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+            </svg>
+          </div>
+          <span class="text-xs text-green-600 font-medium bg-green-50 px-2 py-1 rounded-full">+12%</span>
+        </div>
+        <h3 class="text-2xl font-bold text-gray-900" id="stat-orders">--</h3>
+        <p class="text-sm text-gray-500">Total Orders</p>
+      </div>
+
+      <!-- Revenue -->
+      <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+        <div class="flex items-center justify-between mb-4">
+          <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+            <svg class="w-6 h-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <span class="text-xs text-green-600 font-medium bg-green-50 px-2 py-1 rounded-full">+8%</span>
+        </div>
+        <h3 class="text-2xl font-bold text-gray-900" id="stat-revenue">$--</h3>
+        <p class="text-sm text-gray-500">Total Revenue</p>
+      </div>
+
+      <!-- Pending Orders -->
+      <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+        <div class="flex items-center justify-between mb-4">
+          <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+            <svg class="w-6 h-6 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+        </div>
+        <h3 class="text-2xl font-bold text-gray-900" id="stat-pending">--</h3>
+        <p class="text-sm text-gray-500">Pending Orders</p>
+      </div>
+
+      <!-- Customers -->
+      <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+        <div class="flex items-center justify-between mb-4">
+          <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+            <svg class="w-6 h-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+          </div>
+          <span class="text-xs text-green-600 font-medium bg-green-50 px-2 py-1 rounded-full">+5%</span>
+        </div>
+        <h3 class="text-2xl font-bold text-gray-900" id="stat-customers">--</h3>
+        <p class="text-sm text-gray-500">Total Customers</p>
+      </div>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="grid lg:grid-cols-3 gap-8">
+      <!-- Recent Orders -->
+      <div class="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-100">
+        <div class="p-6 border-b border-gray-100">
+          <div class="flex items-center justify-between">
+            <h2 class="font-semibold text-gray-900">Recent Orders</h2>
+            <a href="/admin/orders" class="text-sm text-blue-600 hover:text-blue-700">View All →</a>
+          </div>
+        </div>
+        
+        <div id="recent-orders-list" class="divide-y divide-gray-100">
+          <!-- Loading state -->
+          <div class="p-8 text-center text-gray-500">
+            <div class="inline-block w-6 h-6 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin mb-2"></div>
+            <p>Loading orders...</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="space-y-6">
+        <!-- Quick Actions Card -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+          <h2 class="font-semibold text-gray-900 mb-4">Quick Actions</h2>
+          <div class="space-y-3">
+            <a href="/admin/orders?status=pending" class="flex items-center gap-3 p-3 bg-yellow-50 hover:bg-yellow-100 rounded-lg transition-colors">
+              <div class="w-8 h-8 bg-yellow-200 rounded-lg flex items-center justify-center">
+                <svg class="w-4 h-4 text-yellow-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <span class="text-sm font-medium text-yellow-800">Review Pending Orders</span>
+            </a>
+            
+            <a href="/admin/products/new" class="flex items-center gap-3 p-3 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors">
+              <div class="w-8 h-8 bg-blue-200 rounded-lg flex items-center justify-center">
+                <svg class="w-4 h-4 text-blue-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                </svg>
+              </div>
+              <span class="text-sm font-medium text-blue-800">Add New Product</span>
+            </a>
+            
+            <a href="/admin/orders?status=preparing" class="flex items-center gap-3 p-3 bg-purple-50 hover:bg-purple-100 rounded-lg transition-colors">
+              <div class="w-8 h-8 bg-purple-200 rounded-lg flex items-center justify-center">
+                <svg class="w-4 h-4 text-purple-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                </svg>
+              </div>
+              <span class="text-sm font-medium text-purple-800">Orders Being Prepared</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Today's Deliveries -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+          <h2 class="font-semibold text-gray-900 mb-4">Today's Deliveries</h2>
+          <div id="todays-deliveries" class="space-y-3">
+            <p class="text-sm text-gray-500 text-center py-4">No deliveries scheduled for today</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</AdminLayout>
+
+<script>
+  // Load dashboard data
+  async function loadDashboardData() {
+    // For demo purposes, using mock data
+    // In production, these would be API calls
+    
+    const mockStats = {
+      orders: 47,
+      revenue: 8420,
+      pending: 5,
+      customers: 32,
+    };
+
+    const mockOrders = [
+      { orderNumber: 'DRH-ABC123', customer: 'John Doe', total: 65, status: 'pending', date: 'Today, 2:30 PM' },
+      { orderNumber: 'DRH-DEF456', customer: 'Sarah Smith', total: 185, status: 'preparing', date: 'Today, 11:00 AM' },
+      { orderNumber: 'DRH-GHI789', customer: 'Mike Johnson', total: 95, status: 'confirmed', date: 'Yesterday' },
+      { orderNumber: 'DRH-JKL012', customer: 'Emily Brown', total: 240, status: 'delivered', date: 'Jan 9, 2026' },
+    ];
+
+    // Update stats
+    document.getElementById('stat-orders')!.textContent = mockStats.orders.toString();
+    document.getElementById('stat-revenue')!.textContent = `$${mockStats.revenue.toLocaleString()}`;
+    document.getElementById('stat-pending')!.textContent = mockStats.pending.toString();
+    document.getElementById('stat-customers')!.textContent = mockStats.customers.toString();
+
+    // Update orders list
+    const ordersHtml = mockOrders.map(order => `
+      <a href="/admin/orders/${order.orderNumber}" class="flex items-center justify-between p-4 hover:bg-gray-50 transition-colors">
+        <div class="flex items-center gap-4">
+          <div>
+            <p class="font-medium text-gray-900">${order.orderNumber}</p>
+            <p class="text-sm text-gray-500">${order.customer}</p>
+          </div>
+        </div>
+        <div class="text-right">
+          <p class="font-medium text-gray-900">$${order.total.toFixed(2)}</p>
+          <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${getStatusClass(order.status)}">
+            ${formatStatus(order.status)}
+          </span>
+        </div>
+      </a>
+    `).join('');
+
+    document.getElementById('recent-orders-list')!.innerHTML = ordersHtml || '<p class="p-8 text-center text-gray-500">No orders yet</p>';
+  }
+
+  function getStatusClass(status: string): string {
+    const classes: Record<string, string> = {
+      pending: 'bg-yellow-100 text-yellow-800',
+      deposit_paid: 'bg-blue-100 text-blue-800',
+      confirmed: 'bg-green-100 text-green-800',
+      preparing: 'bg-purple-100 text-purple-800',
+      ready: 'bg-indigo-100 text-indigo-800',
+      delivered: 'bg-emerald-100 text-emerald-800',
+      cancelled: 'bg-red-100 text-red-800',
+    };
+    return classes[status] || 'bg-gray-100 text-gray-800';
+  }
+
+  function formatStatus(status: string): string {
+    return status.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
+  }
+
+  // Load data on page load
+  loadDashboardData();
+</script>

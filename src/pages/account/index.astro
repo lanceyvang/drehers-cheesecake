@@ -1,0 +1,364 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+// This page uses client-side auth checking
+export const prerender = true;
+---
+
+<Layout title="My Account">
+  <section class="pt-32 pb-8 bg-gradient-to-b from-cream to-cream-light">
+    <div class="container">
+      <h1 class="font-display text-4xl md:text-5xl font-bold text-chocolate text-center">
+        My Account
+      </h1>
+    </div>
+  </section>
+  
+  <section class="py-12 bg-cream-light min-h-[60vh]">
+    <div class="container">
+      <div class="max-w-4xl mx-auto">
+        <div id="auth-loading" class="text-center py-16">
+          <div class="spinner mx-auto mb-4"></div>
+          <p class="text-slate">Loading...</p>
+        </div>
+        
+        <!-- Login/Register Form (shown when not logged in) -->
+        <div id="auth-form" class="hidden">
+          <div class="grid md:grid-cols-2 gap-8">
+            <!-- Login -->
+            <div class="bg-white rounded-2xl shadow-sm p-8">
+              <h2 class="font-display text-2xl font-semibold text-chocolate mb-6">Sign In</h2>
+              
+              <form id="login-form" class="space-y-4">
+                <div id="login-error" class="hidden p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm"></div>
+                
+                <div>
+                  <label for="login-email" class="input-label">Email</label>
+                  <input type="email" id="login-email" name="email" required class="input" placeholder="your@email.com" />
+                </div>
+                <div>
+                  <label for="login-password" class="input-label">Password</label>
+                  <input type="password" id="login-password" name="password" required class="input" placeholder="••••••••" />
+                </div>
+                <button type="submit" id="login-btn" class="btn btn-primary w-full">
+                  <span class="btn-text">Sign In</span>
+                  <span class="btn-loading hidden">
+                    <svg class="animate-spin h-5 w-5 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                  </span>
+                </button>
+              </form>
+              
+              <p class="text-sm text-slate text-center mt-4">
+                <a href="/account/forgot-password" class="text-gold-dark hover:underline">Forgot your password?</a>
+              </p>
+            </div>
+            
+            <!-- Register -->
+            <div class="bg-white rounded-2xl shadow-sm p-8">
+              <h2 class="font-display text-2xl font-semibold text-chocolate mb-6">Create Account</h2>
+              
+              <form id="register-form" class="space-y-4">
+                <div id="register-error" class="hidden p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm"></div>
+                <div id="register-success" class="hidden p-3 bg-green-50 border border-green-200 rounded-lg text-green-700 text-sm"></div>
+                
+                <div class="grid grid-cols-2 gap-4">
+                  <div>
+                    <label for="register-first" class="input-label">First Name</label>
+                    <input type="text" id="register-first" name="firstName" required class="input" placeholder="John" />
+                  </div>
+                  <div>
+                    <label for="register-last" class="input-label">Last Name</label>
+                    <input type="text" id="register-last" name="lastName" required class="input" placeholder="Doe" />
+                  </div>
+                </div>
+                <div>
+                  <label for="register-email" class="input-label">Email</label>
+                  <input type="email" id="register-email" name="email" required class="input" placeholder="your@email.com" />
+                </div>
+                <div>
+                  <label for="register-password" class="input-label">Password</label>
+                  <input type="password" id="register-password" name="password" required minlength="8" class="input" placeholder="••••••••" />
+                  <p class="text-xs text-slate mt-1">At least 8 characters</p>
+                </div>
+                <button type="submit" id="register-btn" class="btn btn-primary w-full">
+                  <span class="btn-text">Create Account</span>
+                  <span class="btn-loading hidden">
+                    <svg class="animate-spin h-5 w-5 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                  </span>
+                </button>
+              </form>
+              
+              <p class="text-xs text-slate text-center mt-4">
+                By creating an account, you agree to our 
+                <a href="/policies/terms" class="text-gold-dark hover:underline">Terms of Service</a>
+                and
+                <a href="/policies/privacy" class="text-gold-dark hover:underline">Privacy Policy</a>.
+              </p>
+            </div>
+          </div>
+          
+          <!-- Guest Order Lookup -->
+          <div class="mt-8 bg-white rounded-2xl shadow-sm p-8">
+            <h2 class="font-display text-xl font-semibold text-chocolate mb-4">Track Guest Order</h2>
+            <p class="text-slate mb-4">
+              Placed an order without an account? Enter your order number and email to view your order status.
+            </p>
+            <form id="guest-lookup-form" class="flex flex-col sm:flex-row gap-4">
+              <input 
+                type="text" 
+                name="orderNumber" 
+                required 
+                class="input flex-1" 
+                placeholder="Order Number (e.g., DRH-ABC12345)" 
+              />
+              <input 
+                type="email" 
+                name="email" 
+                required 
+                class="input flex-1" 
+                placeholder="Email used for order" 
+              />
+              <button type="submit" class="btn btn-secondary">
+                Track Order
+              </button>
+            </form>
+          </div>
+        </div>
+        
+        <!-- Dashboard (shown when logged in) -->
+        <div id="dashboard" class="hidden">
+          <!-- Welcome Banner -->
+          <div class="bg-gradient-to-r from-chocolate to-chocolate-light rounded-2xl p-8 mb-8 text-cream">
+            <h2 class="font-display text-2xl font-bold mb-2">
+              Welcome back, <span id="user-name">there</span>!
+            </h2>
+            <p class="text-cream/80">Manage your orders and account settings below.</p>
+          </div>
+          
+          <div class="grid md:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow cursor-pointer" id="profile-card">
+              <div class="w-12 h-12 rounded-full bg-gold/10 flex items-center justify-center mb-4">
+                <svg class="w-6 h-6 text-gold-dark" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                </svg>
+              </div>
+              <h3 class="font-semibold text-chocolate">Profile</h3>
+              <p class="text-sm text-slate">Manage your info</p>
+            </div>
+            
+            <a href="/account/orders" class="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow">
+              <div class="w-12 h-12 rounded-full bg-berry/10 flex items-center justify-center mb-4">
+                <svg class="w-6 h-6 text-berry" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25z" />
+                </svg>
+              </div>
+              <h3 class="font-semibold text-chocolate">Orders</h3>
+              <p class="text-sm text-slate">View order history</p>
+            </a>
+            
+            <div class="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+              <div class="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center mb-4">
+                <svg class="w-6 h-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
+                </svg>
+              </div>
+              <h3 class="font-semibold text-chocolate">Addresses</h3>
+              <p class="text-sm text-slate">Saved locations</p>
+            </div>
+            
+            <button id="logout-btn" class="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow text-left">
+              <div class="w-12 h-12 rounded-full bg-slate/10 flex items-center justify-center mb-4">
+                <svg class="w-6 h-6 text-slate" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />
+                </svg>
+              </div>
+              <h3 class="font-semibold text-chocolate">Sign Out</h3>
+              <p class="text-sm text-slate">Log out of account</p>
+            </button>
+          </div>
+          
+          <!-- Recent Orders Preview -->
+          <div class="bg-white rounded-2xl shadow-sm p-6">
+            <div class="flex items-center justify-between mb-6">
+              <h2 class="font-display text-xl font-semibold text-chocolate">Recent Orders</h2>
+              <a href="/account/orders" class="text-sm text-gold-dark hover:underline">View All</a>
+            </div>
+            
+            <div id="recent-orders" class="space-y-4">
+              <p class="text-center text-slate py-8">No orders yet. <a href="/products" class="text-gold-dark hover:underline">Start shopping!</a></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<script>
+  import { createAuthClient } from 'better-auth/client';
+
+  // Initialize auth client
+  const authClient = createAuthClient({
+    baseURL: window.location.origin,
+  });
+
+  const loadingEl = document.getElementById('auth-loading');
+  const authFormEl = document.getElementById('auth-form');
+  const dashboardEl = document.getElementById('dashboard');
+  const userNameEl = document.getElementById('user-name');
+  
+  // Check session on load
+  async function checkSession() {
+    try {
+      const { data: session } = await authClient.getSession();
+      
+      loadingEl?.classList.add('hidden');
+      
+      if (session?.user) {
+        // User is logged in
+        dashboardEl?.classList.remove('hidden');
+        if (userNameEl) {
+          userNameEl.textContent = session.user.name || session.user.email?.split('@')[0] || 'there';
+        }
+        
+        // Also store in localStorage for other pages
+        localStorage.setItem('user', JSON.stringify(session.user));
+      } else {
+        // User is not logged in
+        authFormEl?.classList.remove('hidden');
+        localStorage.removeItem('user');
+      }
+    } catch (error) {
+      console.error('Session check failed:', error);
+      loadingEl?.classList.add('hidden');
+      authFormEl?.classList.remove('hidden');
+    }
+  }
+  
+  checkSession();
+  
+  // Login form handler
+  document.getElementById('login-form')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const form = e.target as HTMLFormElement;
+    const btn = document.getElementById('login-btn');
+    const errorEl = document.getElementById('login-error');
+    const btnText = btn?.querySelector('.btn-text');
+    const btnLoading = btn?.querySelector('.btn-loading');
+    
+    const email = (form.querySelector('#login-email') as HTMLInputElement).value;
+    const password = (form.querySelector('#login-password') as HTMLInputElement).value;
+    
+    // Show loading state
+    btnText?.classList.add('hidden');
+    btnLoading?.classList.remove('hidden');
+    errorEl?.classList.add('hidden');
+    
+    try {
+      const { data, error } = await authClient.signIn.email({
+        email,
+        password,
+      });
+      
+      if (error) {
+        throw new Error(error.message || 'Sign in failed');
+      }
+      
+      // Success - reload to show dashboard
+      window.location.reload();
+    } catch (error) {
+      // Show error
+      if (errorEl) {
+        errorEl.textContent = error instanceof Error ? error.message : 'Sign in failed. Please try again.';
+        errorEl.classList.remove('hidden');
+      }
+    } finally {
+      btnText?.classList.remove('hidden');
+      btnLoading?.classList.add('hidden');
+    }
+  });
+  
+  // Register form handler
+  document.getElementById('register-form')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const form = e.target as HTMLFormElement;
+    const btn = document.getElementById('register-btn');
+    const errorEl = document.getElementById('register-error');
+    const successEl = document.getElementById('register-success');
+    const btnText = btn?.querySelector('.btn-text');
+    const btnLoading = btn?.querySelector('.btn-loading');
+    
+    const firstName = (form.querySelector('#register-first') as HTMLInputElement).value;
+    const lastName = (form.querySelector('#register-last') as HTMLInputElement).value;
+    const email = (form.querySelector('#register-email') as HTMLInputElement).value;
+    const password = (form.querySelector('#register-password') as HTMLInputElement).value;
+    
+    // Show loading state
+    btnText?.classList.add('hidden');
+    btnLoading?.classList.remove('hidden');
+    errorEl?.classList.add('hidden');
+    successEl?.classList.add('hidden');
+    
+    try {
+      const { data, error } = await authClient.signUp.email({
+        email,
+        password,
+        name: `${firstName} ${lastName}`,
+      });
+      
+      if (error) {
+        throw new Error(error.message || 'Registration failed');
+      }
+      
+      // Success - show message and reload
+      if (successEl) {
+        successEl.textContent = 'Account created successfully! Signing you in...';
+        successEl.classList.remove('hidden');
+      }
+      
+      setTimeout(() => window.location.reload(), 1500);
+    } catch (error) {
+      // Show error
+      if (errorEl) {
+        errorEl.textContent = error instanceof Error ? error.message : 'Registration failed. Please try again.';
+        errorEl.classList.remove('hidden');
+      }
+    } finally {
+      btnText?.classList.remove('hidden');
+      btnLoading?.classList.add('hidden');
+    }
+  });
+  
+  // Logout handler
+  document.getElementById('logout-btn')?.addEventListener('click', async () => {
+    try {
+      await authClient.signOut();
+      localStorage.removeItem('user');
+      window.location.reload();
+    } catch (error) {
+      console.error('Logout failed:', error);
+      // Force logout anyway
+      localStorage.removeItem('user');
+      window.location.reload();
+    }
+  });
+  
+  // Guest order lookup
+  document.getElementById('guest-lookup-form')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const form = e.target as HTMLFormElement;
+    const formData = new FormData(form);
+    const orderNumber = formData.get('orderNumber');
+    
+    window.location.href = `/account/orders/${orderNumber}`;
+  });
+</script>

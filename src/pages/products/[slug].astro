@@ -1,0 +1,333 @@
+---
+export const prerender = false;
+
+import Layout from '../../layouts/Layout.astro';
+
+// In production, this would come from the database
+const products: Record<string, any> = {
+  'lemon-blueberry-crumb-cheesecake': {
+    id: '1',
+    name: 'Lemon Blueberry Crumb Cheesecake',
+    slug: 'lemon-blueberry-crumb-cheesecake',
+    price: 65,
+    imageUrl: '/images/products/8a848a8c-bb25-421f-9e8b-5cc4bc0a0961.png',
+    images: [
+      '/images/products/8a848a8c-bb25-421f-9e8b-5cc4bc0a0961.png',
+    ],
+    category: 'Cheesecake',
+    isFeatured: true,
+    servings: '8-10 slices',
+    leadTimeDays: 1,
+    description: `
+      Our Lemon Blueberry Crumb Cheesecake is a perfect balance of bright citrus 
+      and sweet berries. Made with fresh lemon zest and juicy blueberries, 
+      this cheesecake features a buttery crumb topping that adds the perfect 
+      crunch to every bite.
+      
+      Each cheesecake is handcrafted with premium cream cheese, fresh eggs, 
+      and our signature graham cracker crust.
+    `,
+    ingredients: ['Cream Cheese', 'Fresh Blueberries', 'Lemon Zest', 'Sugar', 'Eggs', 'Graham Cracker Crust', 'Butter', 'Vanilla Extract'],
+  },
+  'cookie-butter-cheesecake': {
+    id: '2',
+    name: 'Cookie Butter Cheesecake',
+    slug: 'cookie-butter-cheesecake',
+    price: 65,
+    imageUrl: '/images/products/26bf0a94-711f-4f0d-9e26-c9e880eafcd8.png',
+    images: [
+      '/images/products/26bf0a94-711f-4f0d-9e26-c9e880eafcd8.png',
+    ],
+    category: 'Cheesecake',
+    isFeatured: true,
+    servings: '8-10 slices',
+    leadTimeDays: 1,
+    description: `
+      Rich, spiced cookie butter swirled into velvety smooth cheesecake perfection.
+      This indulgent creation combines the warm, caramelized flavors of speculoos 
+      cookies with our creamy New York style cheesecake base.
+    `,
+    ingredients: ['Cream Cheese', 'Speculoos Cookie Butter', 'Sugar', 'Eggs', 'Speculoos Cookie Crust', 'Butter', 'Vanilla Extract'],
+  },
+  'vanilla-bean-cheesecake': {
+    id: '3',
+    name: 'Vanilla Bean Cheesecake',
+    slug: 'vanilla-bean-cheesecake',
+    price: 60,
+    imageUrl: '/images/products/2f5d8a83-67cb-4ee1-a172-4ad3089ccb6f.png',
+    images: [
+      '/images/products/2f5d8a83-67cb-4ee1-a172-4ad3089ccb6f.png',
+    ],
+    category: 'Cheesecake',
+    isFeatured: true,
+    servings: '8-10 slices',
+    leadTimeDays: 1,
+    description: `
+      Classic New York style cheesecake with Madagascar vanilla bean specks throughout.
+      This timeless favorite showcases the pure, simple elegance of premium ingredients.
+    `,
+    ingredients: ['Cream Cheese', 'Madagascar Vanilla Beans', 'Sugar', 'Eggs', 'Graham Cracker Crust', 'Butter', 'Sour Cream'],
+  },
+  '6-inch-heart-cake': {
+    id: '4',
+    name: "6\" Heart Cake",
+    slug: '6-inch-heart-cake',
+    price: 150,
+    imageUrl: '/images/products/02847297-5134-4a68-a429-f167b545c7bf.png',
+    images: [
+      '/images/products/02847297-5134-4a68-a429-f167b545c7bf.png',
+    ],
+    category: 'Custom Cakes',
+    isFeatured: true,
+    servings: '10-12 servings',
+    leadTimeDays: 5,
+    requiresDeposit: true,
+    description: `
+      A romantic heart-shaped custom cake, perfect for anniversaries, Valentine's Day,
+      or any special celebration of love. Fully customizable with your choice of 
+      flavors, colors, and decorations.
+      
+      **Custom cakes require a 50% deposit and 5 days notice.**
+    `,
+    ingredients: ['Custom - discuss your preferences with us'],
+  },
+};
+
+const { slug } = Astro.params;
+const product = products[slug as string];
+
+if (!product) {
+  return Astro.redirect('/products');
+}
+
+const formattedPrice = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+}).format(product.price);
+---
+
+<Layout title={product.name} description={product.description?.slice(0, 160)}>
+  <section class="pt-32 pb-20 bg-cream-light">
+    <div class="container">
+      <div class="grid lg:grid-cols-2 gap-12">
+        <!-- Product Images -->
+        <div class="space-y-4">
+          <div class="aspect-square rounded-2xl overflow-hidden bg-white">
+            <img 
+              src={product.imageUrl} 
+              alt={product.name}
+              class="w-full h-full object-cover"
+              id="main-image"
+            />
+          </div>
+          
+          {product.images && product.images.length > 1 && (
+            <div class="grid grid-cols-4 gap-4">
+              {product.images.map((img: string, i: number) => (
+                <button 
+                  class="aspect-square rounded-lg overflow-hidden bg-white border-2 border-transparent hover:border-gold transition-colors thumbnail-btn"
+                  data-image={img}
+                >
+                  <img src={img} alt={`${product.name} ${i + 1}`} class="w-full h-full object-cover" />
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+        
+        <!-- Product Info -->
+        <div>
+          <nav class="text-sm text-slate mb-4">
+            <a href="/products" class="hover:text-gold-dark">Products</a>
+            <span class="mx-2">/</span>
+            <span class="text-chocolate">{product.category}</span>
+          </nav>
+          
+          <h1 class="font-display text-3xl md:text-4xl font-bold text-chocolate mb-4">
+            {product.name}
+          </h1>
+          
+          <div class="flex items-center gap-4 mb-6">
+            <p class="font-display text-3xl font-bold text-gold-dark">
+              {formattedPrice}
+            </p>
+            {product.servings && (
+              <span class="px-3 py-1 bg-cream rounded-full text-sm text-slate">
+                {product.servings}
+              </span>
+            )}
+          </div>
+          
+          {product.requiresDeposit && (
+            <div class="mb-6 p-4 bg-gold/10 rounded-xl border border-gold/30">
+              <div class="flex items-start gap-3">
+                <svg class="w-5 h-5 text-gold-dark flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <div>
+                  <p class="font-semibold text-chocolate text-sm">Custom Cake - 50% Deposit Required</p>
+                  <p class="text-sm text-slate mt-1">
+                    This item requires a 50% deposit ({new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(product.price * 0.5)}) and at least 5 days notice.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+          
+          <div class="prose prose-slate mb-8">
+            <p class="whitespace-pre-line">{product.description}</p>
+          </div>
+          
+          {product.ingredients && (
+            <div class="mb-8">
+              <h3 class="font-display text-lg font-semibold text-chocolate mb-3">Ingredients</h3>
+              <div class="flex flex-wrap gap-2">
+                {product.ingredients.map((ingredient: string) => (
+                  <span class="px-3 py-1 bg-cream rounded-full text-sm text-slate">
+                    {ingredient}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+          
+          <!-- Quantity & Add to Cart -->
+          <div class="flex items-center gap-4 mb-8">
+            <div class="flex items-center border-2 border-cream-dark rounded-lg">
+              <button 
+                id="qty-decrease"
+                class="w-12 h-12 flex items-center justify-center text-slate hover:text-chocolate transition-colors"
+              >
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M20 12H4" />
+                </svg>
+              </button>
+              <span id="quantity" class="w-16 text-center font-medium text-chocolate text-lg">1</span>
+              <button 
+                id="qty-increase"
+                class="w-12 h-12 flex items-center justify-center text-slate hover:text-chocolate transition-colors"
+              >
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                </svg>
+              </button>
+            </div>
+            
+            <button 
+              id="add-to-cart"
+              class="btn btn-primary flex-1"
+              data-product-id={product.id}
+              data-product-name={product.name}
+              data-product-price={product.price}
+              data-product-image={product.imageUrl}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+              </svg>
+              Add to Cart
+            </button>
+          </div>
+          
+          <!-- Quick Info -->
+          <div class="grid grid-cols-3 gap-4 p-4 bg-white rounded-xl">
+            <div class="text-center">
+              <svg class="w-8 h-8 mx-auto text-gold mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <p class="text-sm font-medium text-chocolate">
+                {product.leadTimeDays === 1 ? '24-36 hours' : `${product.leadTimeDays} days`}
+              </p>
+              <p class="text-xs text-slate">Lead Time</p>
+            </div>
+            <div class="text-center">
+              <svg class="w-8 h-8 mx-auto text-gold mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
+              </svg>
+              <p class="text-sm font-medium text-chocolate">Free</p>
+              <p class="text-xs text-slate">Delivery</p>
+            </div>
+            <div class="text-center">
+              <svg class="w-8 h-8 mx-auto text-gold mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" />
+              </svg>
+              <p class="text-sm font-medium text-chocolate">Fresh</p>
+              <p class="text-xs text-slate">Made to Order</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<script>
+  let quantity = 1;
+  const quantityEl = document.getElementById('quantity');
+  const decreaseBtn = document.getElementById('qty-decrease');
+  const increaseBtn = document.getElementById('qty-increase');
+  const addToCartBtn = document.getElementById('add-to-cart');
+  
+  decreaseBtn?.addEventListener('click', () => {
+    if (quantity > 1) {
+      quantity--;
+      if (quantityEl) quantityEl.textContent = quantity.toString();
+    }
+  });
+  
+  increaseBtn?.addEventListener('click', () => {
+    quantity++;
+    if (quantityEl) quantityEl.textContent = quantity.toString();
+  });
+  
+  addToCartBtn?.addEventListener('click', () => {
+    const button = addToCartBtn as HTMLButtonElement;
+    const productId = button.dataset.productId;
+    const productName = button.dataset.productName;
+    const productPrice = parseFloat(button.dataset.productPrice || '0');
+    const productImage = button.dataset.productImage;
+    
+    const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+    const existingIndex = cart.findIndex((item: any) => item.id === productId);
+    
+    if (existingIndex > -1) {
+      cart[existingIndex].quantity += quantity;
+    } else {
+      cart.push({
+        id: productId,
+        name: productName,
+        price: productPrice,
+        image: productImage,
+        quantity: quantity,
+      });
+    }
+    
+    localStorage.setItem('cart', JSON.stringify(cart));
+    window.dispatchEvent(new CustomEvent('cart-updated'));
+    
+    // Show toast
+    const container = document.getElementById('toast-container');
+    if (container) {
+      const toast = document.createElement('div');
+      toast.className = 'toast flex items-center gap-3';
+      toast.innerHTML = `
+        <svg class="w-5 h-5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+        </svg>
+        <span>${productName} added to cart!</span>
+      `;
+      container.appendChild(toast);
+      setTimeout(() => toast.remove(), 3000);
+    }
+  });
+  
+  // Thumbnail gallery
+  document.querySelectorAll('.thumbnail-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const img = (btn as HTMLButtonElement).dataset.image;
+      const mainImage = document.getElementById('main-image') as HTMLImageElement;
+      if (mainImage && img) {
+        mainImage.src = img;
+      }
+    });
+  });
+</script>

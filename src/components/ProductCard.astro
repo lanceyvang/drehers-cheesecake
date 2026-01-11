@@ -1,0 +1,165 @@
+---
+interface Props {
+  id: string;
+  name: string;
+  slug: string;
+  price: number;
+  imageUrl?: string;
+  category?: string;
+  isVegan?: boolean;
+  isFeatured?: boolean;
+  shortDescription?: string;
+}
+
+const { id, name, slug, price, imageUrl, category, isVegan, isFeatured, shortDescription } = Astro.props;
+
+const formattedPrice = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+}).format(price);
+---
+
+<a href={`/products/${slug}`} class="group relative flex flex-col h-full w-full overflow-hidden rounded-2xl bg-white transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_20px_40px_-15px_rgba(201,169,98,0.3)] ring-1 ring-black/5 hover:ring-gold/40">
+  
+  <!-- Image Wrapper: Aspect Square for Premium Look -->
+  <div class="relative aspect-square w-full overflow-hidden bg-cream-light">
+    <!-- Image -->
+    <img 
+      src={imageUrl || '/images/placeholder-cheesecake.jpg'} 
+      alt={name}
+      class="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+      loading="lazy"
+    />
+    
+    <!-- Overlay Gradient (Subtle depth) -->
+    <div class="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
+    
+    <!-- Badges -->
+    <div class="absolute top-4 left-4 flex flex-col gap-2 z-10">
+      {isFeatured && (
+        <span class="inline-flex items-center rounded-full bg-gold/90 px-3 py-1 text-xs font-bold uppercase tracking-widest text-white shadow-sm backdrop-blur-md">
+          Featured
+        </span>
+      )}
+      {isVegan && (
+        <span class="inline-flex items-center rounded-full bg-green-600/90 px-3 py-1 text-xs font-bold uppercase tracking-widest text-white shadow-sm backdrop-blur-md">
+          Vegan
+        </span>
+      )}
+    </div>
+
+    <!-- Quick Add Button (Floats up on hover) -->
+    <div class="absolute inset-x-4 bottom-4 z-20 translate-y-4 opacity-0 transition-all duration-300 ease-out group-hover:translate-y-0 group-hover:opacity-100">
+      <button 
+        data-product-id={id}
+        data-product-name={name}
+        data-product-price={price}
+        data-product-image={imageUrl}
+        class="quick-add-btn flex w-full items-center justify-center gap-2 rounded-xl bg-white/95 py-3 text-sm font-bold uppercase tracking-widest text-chocolate shadow-lg backdrop-blur-sm transition-all active:scale-95 hover:bg-chocolate hover:text-white"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+        </svg>
+        Add to Cart
+      </button>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="flex flex-1 flex-col p-6">
+    <div class="mb-2">
+      {category && (
+        <span class="text-xs font-bold uppercase tracking-widest text-gold-dark/80">
+          {category}
+        </span>
+      )}
+    </div>
+    
+    <h3 class="mb-2 font-display text-xl font-bold leading-tight text-chocolate transition-colors group-hover:text-gold-dark">
+      {name}
+    </h3>
+
+    {shortDescription && (
+      <p class="mb-6 text-sm leading-relaxed text-slate/80 line-clamp-2">
+        {shortDescription}
+      </p>
+    )}
+
+    <div class="mt-auto flex items-end justify-between border-t border-cream-dark/50 pt-4">
+      <div class="flex flex-col">
+        <span class="text-[10px] uppercase tracking-wider text-slate/60 font-medium mb-1">Price</span>
+        <span class="font-display text-2xl font-bold text-chocolate group-hover:text-gold-dark transition-colors duration-300">
+          {formattedPrice}
+        </span>
+      </div>
+      <div class="h-8 w-8 rounded-full bg-cream-dark/50 flex items-center justify-center text-chocolate transition-colors group-hover:bg-gold group-hover:text-white">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+        </svg>
+      </div>
+    </div>
+  </div>
+</a>
+
+<script>
+  // Quick Add to Cart functionality
+  document.querySelectorAll('.quick-add-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      
+      const button = e.currentTarget as HTMLButtonElement;
+      const productId = button.dataset.productId;
+      const productName = button.dataset.productName;
+      const productPrice = parseFloat(button.dataset.productPrice || '0');
+      const productImage = button.dataset.productImage;
+      
+      // Get current cart from localStorage
+      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      
+      // Check if product already in cart
+      const existingIndex = cart.findIndex((item: any) => item.id === productId);
+      
+      if (existingIndex > -1) {
+        cart[existingIndex].quantity += 1;
+      } else {
+        cart.push({
+          id: productId,
+          name: productName,
+          price: productPrice,
+          image: productImage,
+          quantity: 1,
+        });
+      }
+      
+      // Save cart
+      localStorage.setItem('cart', JSON.stringify(cart));
+      
+      // Dispatch event for header to update
+      window.dispatchEvent(new CustomEvent('cart-updated'));
+      
+      // Show toast notification
+      showToast(`${productName} added to cart!`);
+    });
+  });
+  
+  function showToast(message: string) {
+    const container = document.getElementById('toast-container');
+    if (!container) return;
+    
+    const toast = document.createElement('div');
+    toast.className = 'toast flex items-center gap-3';
+    toast.innerHTML = `
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+      </svg>
+      <span>${message}</span>
+    `;
+    
+    container.appendChild(toast);
+    
+    setTimeout(() => {
+      toast.remove();
+    }, 3000);
+  }
+</script>

@@ -1,0 +1,369 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+
+// This page is server-rendered (dynamic route)
+export const prerender = false;
+
+// Get order ID from URL
+const { id } = Astro.params;
+
+// Order status steps for the progress tracker
+const statusSteps = [
+  { key: 'pending', label: 'Order Placed', icon: '📝' },
+  { key: 'deposit_paid', label: 'Deposit Received', icon: '💳' },
+  { key: 'confirmed', label: 'Confirmed', icon: '✅' },
+  { key: 'preparing', label: 'Preparing', icon: '👨‍🍳' },
+  { key: 'ready', label: 'Ready', icon: '📦' },
+  { key: 'delivered', label: 'Delivered', icon: '🎉' },
+];
+---
+
+<Layout title={`Order ${id}`} description="Track your Dreher's Cheesecake order status.">
+  <!-- Hero Section -->
+  <section class="pt-32 pb-8 bg-gradient-to-b from-cream to-cream-light">
+    <div class="container">
+      <nav class="flex items-center gap-2 text-sm text-slate mb-6">
+        <a href="/" class="hover:text-chocolate transition-colors">Home</a>
+        <span>/</span>
+        <a href="/account" class="hover:text-chocolate transition-colors">Account</a>
+        <span>/</span>
+        <span class="text-chocolate">Order {id}</span>
+      </nav>
+      
+      <div class="text-center">
+        <p class="font-accent text-lg text-gold-dark italic mb-2">Order Tracking</p>
+        <h1 class="font-display text-3xl md:text-4xl font-bold text-chocolate mb-2">
+          Order <span id="order-number">{id}</span>
+        </h1>
+        <p id="order-status-text" class="text-slate">Loading order details...</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Order Content -->
+  <section class="py-12 bg-cream-light">
+    <div class="container max-w-4xl">
+      
+      <!-- Loading State -->
+      <div id="loading-state" class="text-center py-12">
+        <div class="inline-block w-8 h-8 border-4 border-gold border-t-transparent rounded-full animate-spin"></div>
+        <p class="text-slate mt-4">Loading your order...</p>
+      </div>
+
+      <!-- Error State -->
+      <div id="error-state" class="hidden text-center py-12">
+        <div class="w-16 h-16 mx-auto bg-red-100 rounded-full flex items-center justify-center mb-4">
+          <svg class="w-8 h-8 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </div>
+        <h2 class="font-display text-2xl font-bold text-chocolate mb-2">Order Not Found</h2>
+        <p class="text-slate mb-6">We couldn't find an order with that ID. Please check your order confirmation email.</p>
+        <a href="/account" class="btn btn-primary">Back to Account</a>
+      </div>
+
+      <!-- Order Details (shown when loaded) -->
+      <div id="order-details" class="hidden space-y-8">
+        
+        <!-- Status Progress -->
+        <div class="bg-white rounded-2xl p-6 md:p-8 shadow-soft">
+          <h2 class="font-display text-xl font-bold text-chocolate mb-6">Order Status</h2>
+          
+          <div class="relative">
+            <!-- Progress Line -->
+            <div class="absolute top-5 left-0 right-0 h-1 bg-cream-dark rounded-full">
+              <div id="progress-bar" class="h-full bg-gradient-to-r from-gold to-gold-dark rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+            
+            <!-- Status Steps -->
+            <div class="flex justify-between relative">
+              {statusSteps.map((step, index) => (
+                <div class="status-step flex flex-col items-center" data-step={step.key}>
+                  <div class="step-icon w-10 h-10 rounded-full bg-cream-dark flex items-center justify-center text-lg relative z-10 transition-all duration-300">
+                    {step.icon}
+                  </div>
+                  <span class="step-label text-xs mt-2 text-slate text-center max-w-[60px] hidden md:block">
+                    {step.label}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+          
+          <!-- Current Status Message -->
+          <div id="status-message" class="mt-8 p-4 bg-cream rounded-xl text-center">
+            <p class="font-medium text-chocolate"></p>
+          </div>
+        </div>
+
+        <!-- Order Summary -->
+        <div class="bg-white rounded-2xl p-6 md:p-8 shadow-soft">
+          <h2 class="font-display text-xl font-bold text-chocolate mb-6">Order Summary</h2>
+          
+          <div id="order-items" class="space-y-4">
+            <!-- Items will be inserted here -->
+          </div>
+          
+          <div class="border-t border-cream-dark mt-6 pt-6 space-y-2">
+            <div class="flex justify-between text-slate">
+              <span>Subtotal</span>
+              <span id="subtotal">$0.00</span>
+            </div>
+            <div class="flex justify-between text-slate">
+              <span>Delivery</span>
+              <span class="text-green-600">FREE</span>
+            </div>
+            <div id="deposit-row" class="hidden flex justify-between text-slate">
+              <span>Deposit Paid</span>
+              <span id="deposit-paid" class="text-green-600">$0.00</span>
+            </div>
+            <div class="flex justify-between text-lg font-bold text-chocolate pt-2 border-t border-cream-dark">
+              <span>Total</span>
+              <span id="total">$0.00</span>
+            </div>
+            <div id="balance-row" class="hidden flex justify-between text-amber-700 bg-amber-50 -mx-6 px-6 py-3 mt-4 rounded-b-xl">
+              <span class="font-medium">Balance Due on Delivery</span>
+              <span id="balance-due" class="font-bold">$0.00</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Delivery Details -->
+        <div class="bg-white rounded-2xl p-6 md:p-8 shadow-soft">
+          <h2 class="font-display text-xl font-bold text-chocolate mb-6">Delivery Details</h2>
+          
+          <div class="grid md:grid-cols-2 gap-6">
+            <div>
+              <h3 class="text-sm font-medium text-slate uppercase tracking-wider mb-2">Delivery Address</h3>
+              <p id="delivery-address" class="text-chocolate">Loading...</p>
+            </div>
+            <div>
+              <h3 class="text-sm font-medium text-slate uppercase tracking-wider mb-2">Delivery Date & Time</h3>
+              <p id="delivery-datetime" class="text-chocolate">Loading...</p>
+            </div>
+          </div>
+          
+          <div id="special-instructions-container" class="hidden mt-6 pt-6 border-t border-cream-dark">
+            <h3 class="text-sm font-medium text-slate uppercase tracking-wider mb-2">Special Instructions</h3>
+            <p id="special-instructions" class="text-chocolate"></p>
+          </div>
+        </div>
+
+        <!-- Contact Info -->
+        <div class="bg-chocolate text-cream rounded-2xl p-6 md:p-8">
+          <h2 class="font-display text-xl font-bold mb-4">Need Help?</h2>
+          <p class="text-cream/80 mb-6">
+            If you have any questions about your order, we're here to help!
+          </p>
+          <div class="flex flex-wrap gap-4">
+            <a href="tel:+17185552253" class="inline-flex items-center gap-2 px-4 py-2 bg-cream/10 hover:bg-cream/20 rounded-lg transition-colors">
+              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+              </svg>
+              (718) 555-CAKE
+            </a>
+            <a href="mailto:orders@dreherscheesecake.com" class="inline-flex items-center gap-2 px-4 py-2 bg-cream/10 hover:bg-cream/20 rounded-lg transition-colors">
+              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+              Email Us
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<script define:vars={{ orderId: id }}>
+  // For demo purposes, we'll use localStorage to show order info
+  // In production, this would fetch from the database
+  
+  const statusMessages = {
+    pending: "Your order has been placed and is awaiting payment confirmation.",
+    deposit_paid: "We've received your deposit! Our team will start preparing your order soon.",
+    confirmed: "Your order is confirmed! We're getting everything ready.",
+    preparing: "Our bakers are crafting your delicious treats with love!",
+    ready: "Your order is ready and will be delivered on your scheduled date.",
+    delivered: "Your order has been delivered. Enjoy! 🍰",
+    cancelled: "This order has been cancelled.",
+  };
+
+  const statusStepIndex = {
+    pending: 0,
+    deposit_paid: 1,
+    confirmed: 2,
+    preparing: 3,
+    ready: 4,
+    delivered: 5,
+  };
+
+  function updateStatusUI(status) {
+    const steps = document.querySelectorAll('.status-step');
+    const currentIndex = statusStepIndex[status] ?? 0;
+    const progressPercent = (currentIndex / (steps.length - 1)) * 100;
+    
+    // Update progress bar
+    const progressBar = document.getElementById('progress-bar');
+    if (progressBar) {
+      progressBar.style.width = `${progressPercent}%`;
+    }
+    
+    // Update step icons
+    steps.forEach((step, index) => {
+      const icon = step.querySelector('.step-icon');
+      const label = step.querySelector('.step-label');
+      
+      if (index <= currentIndex) {
+        icon?.classList.remove('bg-cream-dark');
+        icon?.classList.add('bg-gold', 'text-white', 'shadow-lg');
+        label?.classList.add('text-chocolate', 'font-medium');
+      }
+    });
+    
+    // Update status message
+    const statusMessage = document.getElementById('status-message');
+    if (statusMessage) {
+      const p = statusMessage.querySelector('p');
+      if (p) {
+        p.textContent = statusMessages[status] || statusMessages.pending;
+      }
+    }
+  }
+
+  function formatOrderItem(item) {
+    return `
+      <div class="flex items-center gap-4 p-4 bg-cream rounded-xl">
+        <div class="w-16 h-16 bg-cream-dark rounded-lg flex items-center justify-center">
+          <span class="text-2xl">🍰</span>
+        </div>
+        <div class="flex-1">
+          <h3 class="font-medium text-chocolate">${item.name}</h3>
+          <p class="text-sm text-slate">Qty: ${item.quantity}</p>
+        </div>
+        <div class="text-right">
+          <p class="font-semibold text-chocolate">$${(item.price * item.quantity).toFixed(2)}</p>
+          <p class="text-xs text-slate">$${item.price.toFixed(2)} each</p>
+        </div>
+      </div>
+    `;
+  }
+
+  async function loadOrder() {
+    const loadingState = document.getElementById('loading-state');
+    const errorState = document.getElementById('error-state');
+    const orderDetails = document.getElementById('order-details');
+    
+    try {
+      // Try to get order from localStorage (for demo purposes)
+      // In production, fetch from: /api/orders/${orderId}
+      const storedOrder = localStorage.getItem(`order_${orderId}`);
+      
+      if (!storedOrder) {
+        // Check if we have checkout data that matches
+        const checkoutData = localStorage.getItem('checkoutData');
+        const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        
+        if (checkoutData && cart.length > 0) {
+          // Create a simulated order from checkout data
+          const checkout = JSON.parse(checkoutData);
+          const order = {
+            orderNumber: orderId,
+            status: 'confirmed',
+            items: cart,
+            customer: checkout.customer,
+            delivery: checkout.delivery,
+            subtotal: cart.reduce((sum, item) => sum + item.price * item.quantity, 0),
+            depositPaid: cart.some(item => item.price >= 150),
+          };
+          
+          displayOrder(order);
+          return;
+        }
+        
+        // Show error if no order found
+        throw new Error('Order not found');
+      }
+      
+      const order = JSON.parse(storedOrder);
+      displayOrder(order);
+      
+    } catch (error) {
+      console.error('Error loading order:', error);
+      loadingState?.classList.add('hidden');
+      errorState?.classList.remove('hidden');
+    }
+  }
+
+  function displayOrder(order) {
+    const loadingState = document.getElementById('loading-state');
+    const orderDetails = document.getElementById('order-details');
+    
+    // Hide loading, show order
+    loadingState?.classList.add('hidden');
+    orderDetails?.classList.remove('hidden');
+    
+    // Update status
+    const statusText = document.getElementById('order-status-text');
+    if (statusText) {
+      statusText.textContent = `Status: ${order.status.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}`;
+    }
+    updateStatusUI(order.status);
+    
+    // Update items
+    const itemsContainer = document.getElementById('order-items');
+    if (itemsContainer && order.items) {
+      itemsContainer.innerHTML = order.items.map(formatOrderItem).join('');
+    }
+    
+    // Update totals
+    const subtotal = order.subtotal || order.items?.reduce((sum, item) => sum + item.price * item.quantity, 0) || 0;
+    document.getElementById('subtotal').textContent = `$${subtotal.toFixed(2)}`;
+    document.getElementById('total').textContent = `$${subtotal.toFixed(2)}`;
+    
+    // Handle deposit
+    if (order.depositPaid || order.depositAmount) {
+      const depositAmount = order.depositAmount || subtotal * 0.5;
+      const balanceDue = subtotal - depositAmount;
+      
+      document.getElementById('deposit-row')?.classList.remove('hidden');
+      document.getElementById('deposit-paid').textContent = `$${depositAmount.toFixed(2)}`;
+      
+      if (order.status !== 'delivered' && balanceDue > 0) {
+        document.getElementById('balance-row')?.classList.remove('hidden');
+        document.getElementById('balance-due').textContent = `$${balanceDue.toFixed(2)}`;
+      }
+    }
+    
+    // Update delivery details
+    if (order.delivery) {
+      const address = order.delivery;
+      document.getElementById('delivery-address').innerHTML = `
+        ${address.address}<br>
+        ${address.city}, ${address.borough} ${address.zip}
+      `;
+      document.getElementById('delivery-datetime').textContent = 
+        `${address.date || 'TBD'} • ${address.time || 'TBD'}`;
+      
+      if (address.instructions) {
+        document.getElementById('special-instructions-container')?.classList.remove('hidden');
+        document.getElementById('special-instructions').textContent = address.instructions;
+      }
+    }
+  }
+
+  // Load order on page load
+  loadOrder();
+</script>
+
+<style>
+  .step-icon {
+    transform: scale(1);
+    transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .step-icon.bg-gold {
+    transform: scale(1.1);
+  }
+</style>

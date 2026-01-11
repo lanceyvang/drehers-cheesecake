@@ -1,0 +1,472 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import ProductCard from '../../components/ProductCard.astro';
+
+// All products - filtering done client-side for smooth animations
+const allProducts = [
+  // Cheesecakes
+  {
+    id: '1',
+    name: 'Lemon Blueberry Crumb Cheesecake',
+    slug: 'lemon-blueberry-crumb-cheesecake',
+    price: 65,
+    imageUrl: '/images/products/8a848a8c-bb25-421f-9e8b-5cc4bc0a0961.png',
+    category: 'Cheesecake',
+    categorySlug: 'cheesecake',
+    isFeatured: true,
+    shortDescription: 'Bright lemon zest meets sweet blueberry in this creamy, crumb-topped delight.',
+  },
+  {
+    id: '2',
+    name: 'Cookie Butter Cheesecake',
+    slug: 'cookie-butter-cheesecake',
+    price: 65,
+    imageUrl: '/images/products/26bf0a94-711f-4f0d-9e26-c9e880eafcd8.png',
+    category: 'Cheesecake',
+    categorySlug: 'cheesecake',
+    isFeatured: true,
+    shortDescription: 'Rich, spiced cookie butter swirled into velvety cheesecake perfection.',
+  },
+  {
+    id: '3',
+    name: 'Vanilla Bean Cheesecake',
+    slug: 'vanilla-bean-cheesecake',
+    price: 60,
+    imageUrl: '/images/products/2f5d8a83-67cb-4ee1-a172-4ad3089ccb6f.png',
+    category: 'Cheesecake',
+    categorySlug: 'cheesecake',
+    isFeatured: true,
+    shortDescription: 'Classic New York style with Madagascar vanilla bean specks throughout.',
+  },
+  {
+    id: '4',
+    name: 'Strawberry Swirl Cheesecake',
+    slug: 'strawberry-swirl-cheesecake',
+    price: 65,
+    imageUrl: '/images/products/5e75335b-461b-45e6-831c-417095e6b247.png',
+    category: 'Cheesecake',
+    categorySlug: 'cheesecake',
+    shortDescription: 'Fresh strawberry puree swirled through creamy New York cheesecake.',
+  },
+  // Custom Cakes
+  {
+    id: '5',
+    name: "6\" Heart Cake",
+    slug: '6-inch-heart-cake',
+    price: 150,
+    imageUrl: '/images/products/02847297-5134-4a68-a429-f167b545c7bf.png',
+    category: 'Custom Cakes',
+    categorySlug: 'custom-cakes',
+    isFeatured: true,
+    shortDescription: 'A romantic heart-shaped custom cake, perfect for special celebrations.',
+  },
+  {
+    id: '6',
+    name: "5\" Venus Et Fleur Cake",
+    slug: '5-inch-venus-cake',
+    price: 150,
+    imageUrl: '/images/products/a2e8151d-a15f-4ad3-8f0c-e6aa5b90fbeb.png',
+    category: 'Custom Cakes',
+    categorySlug: 'custom-cakes',
+    shortDescription: 'Elegant floral-inspired design with stunning buttercream roses.',
+  },
+  {
+    id: '7',
+    name: "7\" Venus Et Fleur Custom Cake",
+    slug: '7-inch-venus-custom-cake',
+    price: 210,
+    imageUrl: '/images/products/b67f5ac2-5104-4bf7-9d66-bd1d318f84f9.png',
+    category: 'Custom Cakes',
+    categorySlug: 'custom-cakes',
+    shortDescription: 'Fully customizable 7-inch cake for medium gatherings.',
+  },
+  {
+    id: '8',
+    name: "8\" Custom Cake",
+    slug: '8-inch-custom-cake',
+    price: 210,
+    imageUrl: '/images/products/68236334-bffc-4f57-825f-cf0762b63287.png',
+    category: 'Custom Cakes',
+    categorySlug: 'custom-cakes',
+    shortDescription: 'Beautiful custom cake perfect for medium celebrations.',
+  },
+  {
+    id: '9',
+    name: "9\" Custom Cake",
+    slug: '9-inch-custom-cake',
+    price: 230,
+    imageUrl: '/images/products/5dd8f414-bc89-4b7c-b661-5ab8d30f66c6.png',
+    category: 'Custom Cakes',
+    categorySlug: 'custom-cakes',
+    shortDescription: 'Large custom cake perfect for big celebrations.',
+  },
+  {
+    id: '10',
+    name: "5\" Men's Tux Cake",
+    slug: '5-inch-mens-tux-cake',
+    price: 150,
+    imageUrl: '/images/products/1978a125-68b7-4459-b37d-4983b6bfd230.png',
+    category: 'Custom Cakes',
+    categorySlug: 'custom-cakes',
+    shortDescription: 'Sophisticated tuxedo design for the gentleman in your life.',
+  },
+  {
+    id: '11',
+    name: "7\" Men's Tux Cake",
+    slug: '7-inch-mens-tux-cake',
+    price: 210,
+    imageUrl: '/images/products/0f3acf1c-cd8a-4908-8de8-04609cd9b229.png',
+    category: 'Custom Cakes',
+    categorySlug: 'custom-cakes',
+    shortDescription: 'Elegant larger tuxedo cake for a dapper celebration.',
+  },
+  {
+    id: '15',
+    name: 'Assorted Cupcake Board (12-pack)',
+    slug: 'cupcake-board-12',
+    price: 55,
+    imageUrl: 'https://images.unsplash.com/photo-1614707267537-b85aaf00c4b7?w=800&h=800&fit=crop&q=80',
+    category: 'Custom Cakes',
+    categorySlug: 'custom-cakes',
+    shortDescription: 'Beautifully arranged assortment of our best cupcake flavors.',
+  },
+  // Vegan Options
+  {
+    id: '12',
+    name: '7\" Custom Vegan Cake',
+    slug: '7-inch-vegan-cake',
+    price: 225,
+    imageUrl: '/images/products/d7501441-b159-43b2-a5e0-dbefcb84b7e4.png',
+    category: 'Vegan Cake',
+    categorySlug: 'vegan',
+    isVegan: true,
+    shortDescription: 'Plant-based custom cake that tastes amazing.',
+  },
+  {
+    id: '13',
+    name: 'Vegan Chocolate Cupcakes (6-pack)',
+    slug: 'vegan-chocolate-cupcakes',
+    price: 36,
+    imageUrl: '/images/products/7c3b14e4-ba1b-4c6e-a1b6-003154d430a5.png',
+    category: 'Vegan Cupcakes',
+    categorySlug: 'vegan',
+    isVegan: true,
+    shortDescription: 'Rich chocolate vegan cupcakes with dairy-free frosting.',
+  },
+  // Cupcakes
+  {
+    id: '14',
+    name: 'Red Velvet Cupcakes (6-pack)',
+    slug: 'red-velvet-cupcakes',
+    price: 30,
+    imageUrl: 'https://static-production.bakesy.app/g6eu0aqd7l8ni4jrn7u4u4ymq31x',
+    category: 'Cupcakes',
+    categorySlug: 'cupcakes',
+    shortDescription: 'Classic red velvet with cream cheese frosting.',
+  },
+  // Pound Cake
+  {
+    id: '16',
+    name: 'Classic Pound Cake',
+    slug: 'classic-pound-cake',
+    price: 35,
+    imageUrl: '/images/products/e2605246-6c12-4c8e-8026-b54dd59b9c51.png',
+    category: 'Pound Cake',
+    categorySlug: 'pound-cake',
+    shortDescription: 'Dense, buttery, and perfect with a cup of coffee.',
+  },
+  {
+    id: '17',
+    name: 'Lemon Pound Cake',
+    slug: 'lemon-pound-cake',
+    price: 38,
+    imageUrl: '/images/products/9fce269d-9a99-40e5-b28e-ffa80c022385.png',
+    category: 'Pound Cake',
+    categorySlug: 'pound-cake',
+    shortDescription: 'Zesty lemon glaze over moist pound cake.',
+  },
+];
+
+const categoryNames: Record<string, string> = {
+  'cheesecake': 'Cheesecakes',
+  'custom-cakes': 'Custom Cakes',
+  'vegan': 'Vegan Options',
+  'cupcakes': 'Cupcakes',
+  'pound-cake': 'Pound Cake',
+};
+---
+
+<Layout title="All Products" description="Explore our complete collection of handcrafted cheesecakes, custom cakes, cupcakes, and more.">
+  <!-- Page Header -->
+  <section class="pt-32 pb-16 bg-gradient-to-b from-cream to-cream-light">
+    <div class="container">
+      <div class="text-center">
+        <p class="font-accent text-lg text-gold-dark italic mb-2">Our Collection</p>
+        <h1 id="page-title" class="font-display text-4xl md:text-5xl font-bold text-chocolate mb-4 transition-opacity duration-300">
+          All Products
+        </h1>
+        <p id="page-description" class="text-lg text-slate max-w-2xl mx-auto transition-opacity duration-300">
+          Explore our complete collection of handcrafted cheesecakes, custom cakes, cupcakes, and more.
+        </p>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Filter Navigation -->
+  <section id="filter-section" class="py-6 bg-white border-b border-cream-dark sticky top-16 z-40 scroll-mt-16">
+    <div class="container">
+      <div class="flex items-center justify-center gap-2 flex-wrap" id="filter-buttons">
+        <button 
+          data-category="all"
+          class="filter-btn px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 bg-chocolate text-cream shadow-md"
+        >
+          All
+        </button>
+        {Object.entries(categoryNames).map(([slug, name]) => (
+          <button 
+            data-category={slug}
+            class="filter-btn px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 bg-cream text-chocolate hover:bg-cream-dark"
+          >
+            {name}
+          </button>
+        ))}
+      </div>
+    </div>
+  </section>
+  
+  <!-- Products Grid -->
+  <section class="py-16 bg-cream-light">
+    <div class="container">
+      <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+        {allProducts.map((product) => (
+          <div 
+            class="product-item transition-all duration-500 ease-out"
+            data-category={product.categorySlug}
+          >
+            <ProductCard {...product} />
+          </div>
+        ))}
+      </div>
+      
+      <!-- Empty State -->
+      <div id="empty-state" class="hidden text-center py-16">
+        <div class="w-24 h-24 mx-auto mb-6 rounded-full bg-cream flex items-center justify-center">
+          <svg class="w-12 h-12 text-slate" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+          </svg>
+        </div>
+        <h2 class="font-display text-2xl font-semibold text-chocolate mb-2">No Products Found</h2>
+        <p class="text-slate mb-6">We couldn't find any products in this category.</p>
+        <button class="btn btn-primary" data-category="all">View All Products</button>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Info Banner -->
+  <section class="py-12 bg-chocolate text-cream">
+    <div class="container">
+      <div class="flex flex-wrap items-center justify-center gap-8 text-center md:text-left">
+        <div class="flex items-center gap-3">
+          <svg class="w-8 h-8 text-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
+          </svg>
+          <div>
+            <p class="font-semibold">Free Delivery</p>
+            <p class="text-sm text-cream/70">All 5 NYC Boroughs</p>
+          </div>
+        </div>
+        <div class="h-10 w-px bg-chocolate-light hidden md:block"></div>
+        <div class="flex items-center gap-3">
+          <svg class="w-8 h-8 text-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" />
+          </svg>
+          <div>
+            <p class="font-semibold">Freshly Made</p>
+            <p class="text-sm text-cream/70">Baked to Order</p>
+          </div>
+        </div>
+        <div class="h-10 w-px bg-chocolate-light hidden md:block"></div>
+        <div class="flex items-center gap-3">
+          <svg class="w-8 h-8 text-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z" />
+          </svg>
+          <div>
+            <p class="font-semibold">Secure Payment</p>
+            <p class="text-sm text-cream/70">Stripe & PayPal</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .product-item {
+    opacity: 1;
+    transform: scale(1);
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .product-item.filtering-out {
+    opacity: 0;
+    transform: scale(0.9);
+    pointer-events: none;
+  }
+  
+  .product-item.hidden {
+    display: none !important;
+  }
+  
+  .filter-btn.active {
+    background-color: #3c2415;
+    color: #f5f0e8;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  }
+</style>
+
+<script>
+  const categoryNames: Record<string, string> = {
+    'all': 'All Products',
+    'cheesecake': 'Cheesecakes',
+    'custom-cakes': 'Custom Cakes',
+    'vegan': 'Vegan Options',
+    'cupcakes': 'Cupcakes',
+    'pound-cake': 'Pound Cake',
+  };
+  
+  const categoryDescriptions: Record<string, string> = {
+    'all': 'Explore our complete collection of handcrafted cheesecakes, custom cakes, cupcakes, and more.',
+    'cheesecake': 'Our signature New York style cheesecakes, made with premium cream cheese and love.',
+    'custom-cakes': 'Personalized celebration cakes for your special moments.',
+    'vegan': 'Delicious plant-based options that don\'t compromise on taste.',
+    'cupcakes': 'Individual portions of perfection, perfect for any occasion.',
+    'pound-cake': 'Dense, buttery, and absolutely delicious classic pound cakes.',
+  };
+
+  let currentCategory = 'all';
+  
+  function filterProducts(category: string) {
+    if (category === currentCategory) return;
+    
+    const productItems = document.querySelectorAll('.product-item');
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    const pageTitle = document.getElementById('page-title');
+    const pageDescription = document.getElementById('page-description');
+    const emptyState = document.getElementById('empty-state');
+    const productsGrid = document.getElementById('products-grid');
+    const filterSection = document.getElementById('filter-section');
+    
+    // Scroll to filter section to prevent perceived layout shift
+    if (filterSection) {
+      filterSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    
+    // Lock the grid height to prevent layout shift during transition
+    if (productsGrid) {
+      const currentHeight = productsGrid.offsetHeight;
+      productsGrid.style.minHeight = `${currentHeight}px`;
+    }
+    
+    // Update button states
+    filterButtons.forEach(btn => {
+      const btnCategory = (btn as HTMLButtonElement).dataset.category;
+      if (btnCategory === category) {
+        btn.classList.add('active', 'bg-chocolate', 'text-cream', 'shadow-md');
+        btn.classList.remove('bg-cream', 'text-chocolate', 'hover:bg-cream-dark');
+      } else {
+        btn.classList.remove('active', 'bg-chocolate', 'text-cream', 'shadow-md');
+        btn.classList.add('bg-cream', 'text-chocolate', 'hover:bg-cream-dark');
+      }
+    });
+    
+    // Update title and description with fade
+    if (pageTitle && pageDescription) {
+      pageTitle.style.opacity = '0';
+      pageDescription.style.opacity = '0';
+      
+      setTimeout(() => {
+        pageTitle.textContent = categoryNames[category] || 'Products';
+        pageDescription.textContent = categoryDescriptions[category] || '';
+        pageTitle.style.opacity = '1';
+        pageDescription.style.opacity = '1';
+      }, 150);
+    }
+    
+    // Animate out current items
+    productItems.forEach(item => {
+      item.classList.add('filtering-out');
+    });
+    
+    // After animation, show/hide items
+    setTimeout(() => {
+      let visibleCount = 0;
+      
+      productItems.forEach(item => {
+        const itemCategory = (item as HTMLElement).dataset.category;
+        const shouldShow = category === 'all' || itemCategory === category;
+        
+        if (shouldShow) {
+          item.classList.remove('hidden');
+          visibleCount++;
+          // Stagger the fade-in
+          setTimeout(() => {
+            item.classList.remove('filtering-out');
+          }, visibleCount * 40);
+        } else {
+          item.classList.add('hidden');
+          item.classList.remove('filtering-out');
+        }
+      });
+      
+      // Show/hide empty state
+      if (emptyState) {
+        if (visibleCount === 0) {
+          emptyState.classList.remove('hidden');
+        } else {
+          emptyState.classList.add('hidden');
+        }
+      }
+      
+      // After items have faded in, smoothly transition to natural height
+      setTimeout(() => {
+        if (productsGrid) {
+          productsGrid.style.transition = 'min-height 0.4s ease-out';
+          productsGrid.style.minHeight = '';
+          // Clear transition after it completes
+          setTimeout(() => {
+            productsGrid.style.transition = '';
+          }, 400);
+        }
+      }, visibleCount * 40 + 100);
+    }, 300);
+    
+    currentCategory = category;
+    
+    // Update URL without reload
+    const url = category === 'all' ? '/products' : `/products?category=${category}`;
+    history.pushState({ category }, '', url);
+  }
+  
+  // Initialize filter buttons
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const category = (btn as HTMLButtonElement).dataset.category || 'all';
+      filterProducts(category);
+    });
+  });
+  
+  // Handle browser back/forward
+  window.addEventListener('popstate', (event) => {
+    const category = event.state?.category || 'all';
+    filterProducts(category);
+  });
+  
+  // Check URL on load for initial category
+  document.addEventListener('DOMContentLoaded', () => {
+    const params = new URLSearchParams(window.location.search);
+    const initialCategory = params.get('category') || 'all';
+    if (initialCategory !== 'all') {
+      filterProducts(initialCategory);
+    }
+  });
+</script>

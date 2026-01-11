@@ -1,0 +1,391 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+const boroughs = [
+  'Manhattan',
+  'Brooklyn',
+  'Queens',
+  'Bronx',
+  'Staten Island',
+];
+
+// Calculate minimum date (5 days from now for custom cakes)
+const minDate = new Date();
+minDate.setDate(minDate.getDate() + 1); // At least tomorrow for cheesecakes
+const minDateStr = minDate.toISOString().split('T')[0];
+
+const maxDate = new Date();
+maxDate.setDate(maxDate.getDate() + 60); // Up to 60 days ahead
+const maxDateStr = maxDate.toISOString().split('T')[0];
+---
+
+<Layout title="Checkout">
+  <section class="pt-32 pb-8 bg-gradient-to-b from-cream to-cream-light">
+    <div class="container">
+      <h1 class="font-display text-4xl md:text-5xl font-bold text-chocolate text-center">
+        Checkout
+      </h1>
+    </div>
+  </section>
+  
+  <section class="py-12 bg-cream-light min-h-[60vh]">
+    <div class="container">
+      <div class="max-w-6xl mx-auto">
+        <div class="grid lg:grid-cols-5 gap-8">
+          <!-- Checkout Form -->
+          <div class="lg:col-span-3">
+            <form id="checkout-form" class="space-y-8">
+              <!-- Contact Information -->
+              <div class="bg-white rounded-2xl shadow-sm p-6">
+                <h2 class="font-display text-xl font-semibold text-chocolate mb-6 flex items-center gap-2">
+                  <span class="w-8 h-8 rounded-full bg-gold text-white flex items-center justify-center text-sm font-bold">1</span>
+                  Contact Information
+                </h2>
+                
+                <div class="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <label for="firstName" class="input-label">First Name *</label>
+                    <input type="text" id="firstName" name="firstName" required class="input" placeholder="John" />
+                  </div>
+                  <div>
+                    <label for="lastName" class="input-label">Last Name *</label>
+                    <input type="text" id="lastName" name="lastName" required class="input" placeholder="Doe" />
+                  </div>
+                  <div>
+                    <label for="email" class="input-label">Email *</label>
+                    <input type="email" id="email" name="email" required class="input" placeholder="john@example.com" />
+                  </div>
+                  <div>
+                    <label for="phone" class="input-label">Phone *</label>
+                    <input type="tel" id="phone" name="phone" required class="input" placeholder="(555) 123-4567" />
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Delivery Information -->
+              <div class="bg-white rounded-2xl shadow-sm p-6">
+                <h2 class="font-display text-xl font-semibold text-chocolate mb-6 flex items-center gap-2">
+                  <span class="w-8 h-8 rounded-full bg-gold text-white flex items-center justify-center text-sm font-bold">2</span>
+                  Delivery Details
+                </h2>
+                
+                <div class="space-y-4">
+                  <div>
+                    <label for="address" class="input-label">Street Address *</label>
+                    <input type="text" id="address" name="address" required class="input" placeholder="123 Main St, Apt 4B" />
+                  </div>
+                  
+                  <div class="grid md:grid-cols-3 gap-4">
+                    <div>
+                      <label for="borough" class="input-label">Borough *</label>
+                      <select id="borough" name="borough" required class="input">
+                        <option value="">Select...</option>
+                        {boroughs.map(b => (
+                          <option value={b}>{b}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label for="city" class="input-label">City</label>
+                      <input type="text" id="city" name="city" value="New York" readonly class="input bg-cream-dark/50" />
+                    </div>
+                    <div>
+                      <label for="zip" class="input-label">ZIP Code *</label>
+                      <input type="text" id="zip" name="zip" required class="input" placeholder="10001" pattern="[0-9]{5}" />
+                    </div>
+                  </div>
+                  
+                  <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                      <label for="deliveryDate" class="input-label">Preferred Date *</label>
+                      <input 
+                        type="date" 
+                        id="deliveryDate" 
+                        name="deliveryDate" 
+                        required 
+                        class="input"
+                        min={minDateStr}
+                        max={maxDateStr}
+                      />
+                      <p id="date-warning" class="text-sm text-berry mt-1 hidden">
+                        Custom cakes require at least 5 days notice.
+                      </p>
+                    </div>
+                    <div>
+                      <label for="deliveryTime" class="input-label">Preferred Time</label>
+                      <select id="deliveryTime" name="deliveryTime" class="input">
+                        <option value="morning">Morning (9AM - 12PM)</option>
+                        <option value="afternoon">Afternoon (12PM - 5PM)</option>
+                        <option value="evening">Evening (5PM - 8PM)</option>
+                      </select>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <label for="instructions" class="input-label">Special Instructions</label>
+                    <textarea 
+                      id="instructions" 
+                      name="instructions" 
+                      rows="3" 
+                      class="input resize-none"
+                      placeholder="Any special requests or delivery instructions..."
+                    ></textarea>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Payment Method -->
+              <div class="bg-white rounded-2xl shadow-sm p-6">
+                <h2 class="font-display text-xl font-semibold text-chocolate mb-6 flex items-center gap-2">
+                  <span class="w-8 h-8 rounded-full bg-gold text-white flex items-center justify-center text-sm font-bold">3</span>
+                  Payment Method
+                </h2>
+                
+                <div class="space-y-4">
+                  <label class="flex items-center gap-4 p-4 border-2 border-cream-dark rounded-xl cursor-pointer hover:border-gold transition-colors has-[:checked]:border-gold has-[:checked]:bg-gold/5">
+                    <input type="radio" name="paymentMethod" value="stripe" checked class="w-5 h-5 accent-gold" />
+                    <div class="flex-1">
+                      <span class="font-semibold text-chocolate">Credit / Debit Card</span>
+                      <p class="text-sm text-slate">Secure payment via Stripe</p>
+                    </div>
+                    <div class="flex gap-2">
+                      <img src="https://cdn.jsdelivr.net/gh/lipis/flag-icons/flags/4x3/us.svg" alt="Visa" class="h-6" />
+                    </div>
+                  </label>
+                  
+                  <label class="flex items-center gap-4 p-4 border-2 border-cream-dark rounded-xl cursor-pointer hover:border-gold transition-colors has-[:checked]:border-gold has-[:checked]:bg-gold/5">
+                    <input type="radio" name="paymentMethod" value="paypal" class="w-5 h-5 accent-gold" />
+                    <div class="flex-1">
+                      <span class="font-semibold text-chocolate">PayPal</span>
+                      <p class="text-sm text-slate">Pay with your PayPal account</p>
+                    </div>
+                    <svg class="h-6" viewBox="0 0 124 33" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M46.211 6.749h-6.839a.95.95 0 0 0-.939.802l-2.766 17.537a.57.57 0 0 0 .564.658h3.265a.95.95 0 0 0 .939-.803l.746-4.73a.95.95 0 0 1 .938-.803h2.165c4.505 0 7.105-2.18 7.784-6.5.306-1.89.013-3.375-.872-4.415-.972-1.142-2.696-1.746-4.985-1.746zm.789 6.405c-.374 2.454-2.249 2.454-4.062 2.454h-1.032l.724-4.583a.57.57 0 0 1 .563-.481h.473c1.235 0 2.4 0 3.002.704.359.42.469 1.044.332 1.906z" fill="#253B80"/>
+                      <path d="M66.654 13.075h-3.275a.57.57 0 0 0-.563.481l-.145.916-.229-.332c-.709-1.029-2.29-1.373-3.868-1.373-3.619 0-6.71 2.741-7.312 6.586-.313 1.918.132 3.752 1.22 5.031.998 1.176 2.426 1.666 4.125 1.666 2.916 0 4.533-1.875 4.533-1.875l-.146.91a.57.57 0 0 0 .562.66h2.95a.95.95 0 0 0 .939-.803l1.77-11.209a.568.568 0 0 0-.561-.658zm-4.565 6.374c-.316 1.871-1.801 3.127-3.695 3.127-.951 0-1.711-.305-2.199-.883-.484-.574-.668-1.391-.514-2.301.295-1.855 1.805-3.152 3.67-3.152.93 0 1.686.309 2.184.892.499.589.697 1.411.554 2.317z" fill="#253B80"/>
+                      <path d="M84.096 13.075h-3.291a.954.954 0 0 0-.787.417l-4.539 6.686-1.924-6.425a.953.953 0 0 0-.912-.678h-3.234a.57.57 0 0 0-.541.754l3.625 10.638-3.408 4.811a.57.57 0 0 0 .465.9h3.287a.949.949 0 0 0 .781-.408l10.946-15.8a.57.57 0 0 0-.468-.895z" fill="#253B80"/>
+                      <path d="M94.992 6.749h-6.84a.95.95 0 0 0-.938.802l-2.766 17.537a.569.569 0 0 0 .562.658h3.51a.665.665 0 0 0 .656-.562l.785-4.971a.95.95 0 0 1 .938-.803h2.164c4.506 0 7.105-2.18 7.785-6.5.307-1.89.012-3.375-.873-4.415-.971-1.142-2.694-1.746-4.983-1.746zm.789 6.405c-.373 2.454-2.248 2.454-4.062 2.454h-1.031l.725-4.583a.568.568 0 0 1 .562-.481h.473c1.234 0 2.4 0 3.002.704.359.42.468 1.044.331 1.906z" fill="#179BD7"/>
+                      <path d="M115.434 13.075h-3.273a.567.567 0 0 0-.562.481l-.145.916-.23-.332c-.709-1.029-2.289-1.373-3.867-1.373-3.619 0-6.709 2.741-7.311 6.586-.312 1.918.131 3.752 1.219 5.031 1 1.176 2.426 1.666 4.125 1.666 2.916 0 4.533-1.875 4.533-1.875l-.146.91a.57.57 0 0 0 .564.66h2.949a.95.95 0 0 0 .938-.803l1.771-11.209a.571.571 0 0 0-.565-.658zm-4.565 6.374c-.314 1.871-1.801 3.127-3.695 3.127-.949 0-1.711-.305-2.199-.883-.484-.574-.666-1.391-.514-2.301.297-1.855 1.805-3.152 3.67-3.152.93 0 1.686.309 2.184.892.501.589.699 1.411.554 2.317z" fill="#179BD7"/>
+                      <path d="M119.295 7.23l-2.807 17.858a.569.569 0 0 0 .562.658h2.822c.469 0 .867-.34.939-.803l2.768-17.536a.57.57 0 0 0-.562-.659h-3.16a.571.571 0 0 0-.562.482z" fill="#179BD7"/>
+                    </svg>
+                  </label>
+                </div>
+              </div>
+              
+              <!-- Terms -->
+              <div class="flex items-start gap-3">
+                <input type="checkbox" id="terms" name="terms" required class="w-5 h-5 mt-0.5 accent-gold" />
+                <label for="terms" class="text-sm text-slate">
+                  I agree to the <a href="/policies/terms" class="text-gold-dark hover:underline">Terms of Service</a> 
+                  and <a href="/policies/privacy" class="text-gold-dark hover:underline">Privacy Policy</a>. 
+                  I understand that custom cakes require a 50% deposit.
+                </label>
+              </div>
+              
+              <!-- Submit Button -->
+              <button type="submit" id="submit-btn" class="btn btn-primary w-full py-4 text-lg">
+                <span id="btn-text">Complete Order</span>
+                <div id="btn-spinner" class="hidden">
+                  <div class="spinner w-6 h-6 border-white border-t-transparent"></div>
+                </div>
+              </button>
+            </form>
+          </div>
+          
+          <!-- Order Summary Sidebar -->
+          <div class="lg:col-span-2">
+            <div class="bg-white rounded-2xl shadow-sm p-6 sticky top-24">
+              <h2 class="font-display text-xl font-semibold text-chocolate mb-6">Order Summary</h2>
+              
+              <div id="summary-items" class="space-y-4 mb-6">
+                <!-- Rendered by JS -->
+              </div>
+              
+              <div class="border-t border-cream-dark pt-4 space-y-3">
+                <div class="flex justify-between text-slate">
+                  <span>Subtotal</span>
+                  <span id="summary-subtotal">$0.00</span>
+                </div>
+                <div class="flex justify-between text-slate">
+                  <span>Delivery</span>
+                  <span class="text-green-600">Free</span>
+                </div>
+                
+                <div id="summary-deposit" class="hidden flex justify-between text-gold-dark font-medium">
+                  <span>Deposit Due Today (50%)</span>
+                  <span id="summary-deposit-amount">$0.00</span>
+                </div>
+                
+                <div class="border-t border-cream-dark pt-3 flex justify-between font-semibold text-chocolate">
+                  <span>Total</span>
+                  <span id="summary-total" class="text-xl">$0.00</span>
+                </div>
+              </div>
+              
+              <!-- Security Badges -->
+              <div class="mt-6 pt-6 border-t border-cream-dark">
+                <div class="flex items-center justify-center gap-4 text-slate">
+                  <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+                  </svg>
+                  <span class="text-sm">SSL Encrypted</span>
+                  <span class="text-cream-dark">|</span>
+                  <span class="text-sm">Secure Checkout</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<script>
+  interface CartItem {
+    id: string;
+    name: string;
+    price: number;
+    image?: string;
+    quantity: number;
+  }
+
+  function formatPrice(amount: number): string {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+    }).format(amount);
+  }
+
+  function renderSummary() {
+    const cart: CartItem[] = JSON.parse(localStorage.getItem('cart') || '[]');
+    
+    if (cart.length === 0) {
+      window.location.href = '/cart';
+      return;
+    }
+    
+    const summaryItems = document.getElementById('summary-items');
+    if (summaryItems) {
+      summaryItems.innerHTML = cart.map(item => `
+        <div class="flex gap-3">
+          <div class="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 bg-cream">
+            ${item.image 
+              ? `<img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover" />`
+              : `<div class="w-full h-full flex items-center justify-center text-2xl">🍰</div>`
+            }
+          </div>
+          <div class="flex-1 min-w-0">
+            <h4 class="text-sm font-medium text-chocolate truncate">${item.name}</h4>
+            <p class="text-sm text-slate">Qty: ${item.quantity}</p>
+          </div>
+          <p class="font-medium text-chocolate">${formatPrice(item.price * item.quantity)}</p>
+        </div>
+      `).join('');
+    }
+    
+    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const hasCustomCakes = cart.some(item => item.price >= 150);
+    const customCakeTotal = cart
+      .filter(item => item.price >= 150)
+      .reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const depositAmount = customCakeTotal * 0.5;
+    
+    const subtotalEl = document.getElementById('summary-subtotal');
+    const totalEl = document.getElementById('summary-total');
+    const depositDiv = document.getElementById('summary-deposit');
+    const depositAmountEl = document.getElementById('summary-deposit-amount');
+    
+    if (subtotalEl) subtotalEl.textContent = formatPrice(subtotal);
+    if (totalEl) totalEl.textContent = formatPrice(subtotal);
+    
+    if (hasCustomCakes && depositDiv && depositAmountEl) {
+      depositDiv.classList.remove('hidden');
+      depositAmountEl.textContent = formatPrice(depositAmount);
+      
+      // Update button text
+      const btnText = document.getElementById('btn-text');
+      if (btnText) {
+        btnText.textContent = `Pay Deposit ${formatPrice(depositAmount)}`;
+      }
+    }
+    
+    // Check date for custom cakes
+    const dateInput = document.getElementById('deliveryDate') as HTMLInputElement;
+    const dateWarning = document.getElementById('date-warning');
+    
+    if (hasCustomCakes && dateInput && dateWarning) {
+      const minCustomDate = new Date();
+      minCustomDate.setDate(minCustomDate.getDate() + 5);
+      dateInput.min = minCustomDate.toISOString().split('T')[0];
+      dateWarning.classList.remove('hidden');
+    }
+  }
+
+  // Form submission
+  const form = document.getElementById('checkout-form');
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement;
+    const btnText = document.getElementById('btn-text');
+    const btnSpinner = document.getElementById('btn-spinner');
+    
+    // Disable button and show spinner
+    submitBtn.disabled = true;
+    btnText?.classList.add('hidden');
+    btnSpinner?.classList.remove('hidden');
+    
+    const formData = new FormData(form as HTMLFormElement);
+    const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+    const paymentMethod = formData.get('paymentMethod');
+    
+    const orderData = {
+      customer: {
+        firstName: formData.get('firstName'),
+        lastName: formData.get('lastName'),
+        email: formData.get('email'),
+        phone: formData.get('phone'),
+      },
+      delivery: {
+        address: formData.get('address'),
+        borough: formData.get('borough'),
+        city: formData.get('city'),
+        zip: formData.get('zip'),
+        date: formData.get('deliveryDate'),
+        time: formData.get('deliveryTime'),
+        instructions: formData.get('instructions'),
+      },
+      items: cart,
+      paymentMethod,
+    };
+    
+    try {
+      const response = await fetch('/api/checkout/create-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(orderData),
+      });
+      
+      const data = await response.json();
+      
+      if (data.url) {
+        // Redirect to Stripe/PayPal checkout
+        window.location.href = data.url;
+      } else if (data.error) {
+        alert('Error: ' + data.error);
+        submitBtn.disabled = false;
+        btnText?.classList.remove('hidden');
+        btnSpinner?.classList.add('hidden');
+      }
+    } catch (error) {
+      console.error('Checkout error:', error);
+      alert('An error occurred. Please try again.');
+      submitBtn.disabled = false;
+      btnText?.classList.remove('hidden');
+      btnSpinner?.classList.add('hidden');
+    }
+  });
+
+  // Initial render
+  renderSummary();
+</script>

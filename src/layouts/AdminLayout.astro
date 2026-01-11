@@ -1,0 +1,96 @@
+---
+import Layout from './Layout.astro';
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description = 'Admin Dashboard - Dreher\'s Cheesecake' } = Astro.props;
+---
+
+<Layout title={title} description={description}>
+  <div class="min-h-screen bg-slate-50">
+    <!-- Admin Header -->
+    <header class="bg-chocolate text-cream fixed top-0 left-0 right-0 z-50 h-16">
+      <div class="h-full px-6 flex items-center justify-between">
+        <div class="flex items-center gap-4">
+          <a href="/admin" class="font-display text-xl font-bold">
+            Dreher's <span class="text-gold">Admin</span>
+          </a>
+        </div>
+        
+        <nav class="hidden md:flex items-center gap-6">
+          <a href="/admin" class="text-cream/80 hover:text-cream transition-colors">Dashboard</a>
+          <a href="/admin/orders" class="text-cream/80 hover:text-cream transition-colors">Orders</a>
+          <a href="/admin/products" class="text-cream/80 hover:text-cream transition-colors">Products</a>
+          <a href="/admin/customers" class="text-cream/80 hover:text-cream transition-colors">Customers</a>
+        </nav>
+        
+        <div class="flex items-center gap-4">
+          <a href="/" class="text-cream/60 hover:text-cream text-sm transition-colors">
+            View Store →
+          </a>
+          <button id="admin-logout" class="px-3 py-1.5 bg-cream/10 hover:bg-cream/20 rounded-lg text-sm transition-colors">
+            Sign Out
+          </button>
+        </div>
+      </div>
+    </header>
+    
+    <!-- Main Content -->
+    <main class="pt-16">
+      <slot />
+    </main>
+  </div>
+</Layout>
+
+<script>
+  import { createAuthClient } from 'better-auth/client';
+
+  const authClient = createAuthClient({
+    baseURL: window.location.origin,
+  });
+
+  // Check if user is admin
+  async function checkAdminAccess() {
+    try {
+      const { data: session } = await authClient.getSession();
+      
+      if (!session?.user) {
+        // Not logged in
+        window.location.href = '/account?redirect=/admin';
+        return;
+      }
+      
+      // Check for admin role (from localStorage for demo, from session in production)
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      const isAdmin = user.role === 'admin' || session.user.email?.endsWith('@dreherscheesecake.com');
+      
+      if (!isAdmin) {
+        // Not an admin
+        window.location.href = '/account?error=unauthorized';
+        return;
+      }
+    } catch (error) {
+      console.error('Admin check failed:', error);
+      window.location.href = '/account?redirect=/admin';
+    }
+  }
+
+  // Logout handler
+  document.getElementById('admin-logout')?.addEventListener('click', async () => {
+    try {
+      await authClient.signOut();
+      localStorage.removeItem('user');
+      window.location.href = '/account';
+    } catch (error) {
+      console.error('Logout failed:', error);
+      localStorage.removeItem('user');
+      window.location.href = '/account';
+    }
+  });
+
+  // Run check
+  checkAdminAccess();
+</script>
