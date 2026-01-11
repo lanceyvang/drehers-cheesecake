@@ -4,7 +4,7 @@ import { existsSync } from "fs";
 import path from "path";
 
 const openrouter = new OpenRouter({
-  apiKey: "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"
+  apiKey: process.env.OPENROUTER_API_KEY
 });
 
 // Product image prompts - professional food photography style
