@@ -3,11 +3,16 @@ import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { drizzle } from 'drizzle-orm/d1';
 import * as schema from '../../db/schema';
 
+interface AuthEnv {
+  GOOGLE_CLIENT_ID?: string;
+  GOOGLE_CLIENT_SECRET?: string;
+}
+
 /**
  * Create a Better Auth instance configured for Cloudflare D1
  * This must be called with the D1 database binding from the request context
  */
-export function createAuth(d1: D1Database, options?: { baseURL?: string }) {
+export function createAuth(d1: D1Database, options?: { baseURL?: string; env?: AuthEnv }) {
   const db = drizzle(d1, { schema });
   
   return betterAuth({
@@ -24,9 +29,12 @@ export function createAuth(d1: D1Database, options?: { baseURL?: string }) {
     baseURL: options?.baseURL || 'http://localhost:4321',
     basePath: '/api/auth',
     
-    emailAndPassword: {
-      enabled: true,
-      requireEmailVerification: false, // Can enable later with Resend
+    // Google-only authentication - no passwords stored
+    socialProviders: {
+      google: {
+        clientId: options?.env?.GOOGLE_CLIENT_ID || '',
+        clientSecret: options?.env?.GOOGLE_CLIENT_SECRET || '',
+      },
     },
     
     session: {

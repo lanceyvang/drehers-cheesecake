@@ -30,4 +30,6 @@
 	"vars": {
 		"SITE_URL": "https://drehers.lokithor.org"
 	}
+	// Google OAuth secrets - set via: wrangler secret put GOOGLE_CLIENT_ID
+	// and: wrangler secret put GOOGLE_CLIENT_SECRET
 }

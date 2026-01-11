@@ -22,80 +22,39 @@ export const prerender = true;
           <p class="text-slate">Loading...</p>
         </div>
         
-        <!-- Login/Register Form (shown when not logged in) -->
+        <!-- Sign In (shown when not logged in) -->
         <div id="auth-form" class="hidden">
-          <div class="grid md:grid-cols-2 gap-8">
-            <!-- Login -->
-            <div class="bg-white rounded-2xl shadow-sm p-8">
-              <h2 class="font-display text-2xl font-semibold text-chocolate mb-6">Sign In</h2>
+          <div class="max-w-md mx-auto">
+            <div class="bg-white rounded-2xl shadow-sm p-8 text-center">
+              <div class="w-20 h-20 mx-auto mb-6 rounded-full bg-cream flex items-center justify-center">
+                <svg class="w-10 h-10 text-chocolate" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                </svg>
+              </div>
               
-              <form id="login-form" class="space-y-4">
-                <div id="login-error" class="hidden p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm"></div>
-                
-                <div>
-                  <label for="login-email" class="input-label">Email</label>
-                  <input type="email" id="login-email" name="email" required class="input" placeholder="your@email.com" />
-                </div>
-                <div>
-                  <label for="login-password" class="input-label">Password</label>
-                  <input type="password" id="login-password" name="password" required class="input" placeholder="••••••••" />
-                </div>
-                <button type="submit" id="login-btn" class="btn btn-primary w-full">
-                  <span class="btn-text">Sign In</span>
-                  <span class="btn-loading hidden">
-                    <svg class="animate-spin h-5 w-5 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                  </span>
-                </button>
-              </form>
+              <h2 class="font-display text-2xl font-semibold text-chocolate mb-2">Welcome</h2>
+              <p class="text-slate mb-8">Sign in to track orders and manage your account</p>
               
-              <p class="text-sm text-slate text-center mt-4">
-                <a href="/account/forgot-password" class="text-gold-dark hover:underline">Forgot your password?</a>
-              </p>
-            </div>
-            
-            <!-- Register -->
-            <div class="bg-white rounded-2xl shadow-sm p-8">
-              <h2 class="font-display text-2xl font-semibold text-chocolate mb-6">Create Account</h2>
+              <div id="auth-error" class="hidden mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm"></div>
               
-              <form id="register-form" class="space-y-4">
-                <div id="register-error" class="hidden p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm"></div>
-                <div id="register-success" class="hidden p-3 bg-green-50 border border-green-200 rounded-lg text-green-700 text-sm"></div>
-                
-                <div class="grid grid-cols-2 gap-4">
-                  <div>
-                    <label for="register-first" class="input-label">First Name</label>
-                    <input type="text" id="register-first" name="firstName" required class="input" placeholder="John" />
-                  </div>
-                  <div>
-                    <label for="register-last" class="input-label">Last Name</label>
-                    <input type="text" id="register-last" name="lastName" required class="input" placeholder="Doe" />
-                  </div>
-                </div>
-                <div>
-                  <label for="register-email" class="input-label">Email</label>
-                  <input type="email" id="register-email" name="email" required class="input" placeholder="your@email.com" />
-                </div>
-                <div>
-                  <label for="register-password" class="input-label">Password</label>
-                  <input type="password" id="register-password" name="password" required minlength="8" class="input" placeholder="••••••••" />
-                  <p class="text-xs text-slate mt-1">At least 8 characters</p>
-                </div>
-                <button type="submit" id="register-btn" class="btn btn-primary w-full">
-                  <span class="btn-text">Create Account</span>
-                  <span class="btn-loading hidden">
-                    <svg class="animate-spin h-5 w-5 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                  </span>
-                </button>
-              </form>
+              <button id="google-signin-btn" class="w-full flex items-center justify-center gap-3 px-6 py-3 bg-white border-2 border-slate/20 rounded-xl hover:bg-cream hover:border-chocolate/30 transition-all font-medium text-chocolate">
+                <svg class="w-5 h-5" viewBox="0 0 24 24">
+                  <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                  <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                  <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                  <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                </svg>
+                <span id="google-btn-text">Continue with Google</span>
+                <span id="google-btn-loading" class="hidden">
+                  <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                </span>
+              </button>
               
-              <p class="text-xs text-slate text-center mt-4">
-                By creating an account, you agree to our 
+              <p class="text-xs text-slate mt-6">
+                By signing in, you agree to our 
                 <a href="/policies/terms" class="text-gold-dark hover:underline">Terms of Service</a>
                 and
                 <a href="/policies/privacy" class="text-gold-dark hover:underline">Privacy Policy</a>.
@@ -104,27 +63,27 @@ export const prerender = true;
           </div>
           
           <!-- Guest Order Lookup -->
-          <div class="mt-8 bg-white rounded-2xl shadow-sm p-8">
+          <div class="max-w-md mx-auto mt-8 bg-white rounded-2xl shadow-sm p-8">
             <h2 class="font-display text-xl font-semibold text-chocolate mb-4">Track Guest Order</h2>
             <p class="text-slate mb-4">
               Placed an order without an account? Enter your order number and email to view your order status.
             </p>
-            <form id="guest-lookup-form" class="flex flex-col sm:flex-row gap-4">
+            <form id="guest-lookup-form" class="space-y-4">
               <input 
                 type="text" 
                 name="orderNumber" 
                 required 
-                class="input flex-1" 
+                class="input w-full" 
                 placeholder="Order Number (e.g., DRH-ABC12345)" 
               />
               <input 
                 type="email" 
                 name="email" 
                 required 
-                class="input flex-1" 
+                class="input w-full" 
                 placeholder="Email used for order" 
               />
-              <button type="submit" class="btn btn-secondary">
+              <button type="submit" class="btn btn-secondary w-full">
                 Track Order
               </button>
             </form>
@@ -244,18 +203,11 @@ export const prerender = true;
   
   checkSession();
   
-  // Login form handler
-  document.getElementById('login-form')?.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    const form = e.target as HTMLFormElement;
-    const btn = document.getElementById('login-btn');
-    const errorEl = document.getElementById('login-error');
-    const btnText = btn?.querySelector('.btn-text');
-    const btnLoading = btn?.querySelector('.btn-loading');
-    
-    const email = (form.querySelector('#login-email') as HTMLInputElement).value;
-    const password = (form.querySelector('#login-password') as HTMLInputElement).value;
+  // Google Sign In handler
+  document.getElementById('google-signin-btn')?.addEventListener('click', async () => {
+    const btnText = document.getElementById('google-btn-text');
+    const btnLoading = document.getElementById('google-btn-loading');
+    const errorEl = document.getElementById('auth-error');
     
     // Show loading state
     btnText?.classList.add('hidden');
@@ -263,76 +215,16 @@ export const prerender = true;
     errorEl?.classList.add('hidden');
     
     try {
-      const { data, error } = await authClient.signIn.email({
-        email,
-        password,
+      await authClient.signIn.social({
+        provider: 'google',
+        callbackURL: '/account',
       });
-      
-      if (error) {
-        throw new Error(error.message || 'Sign in failed');
-      }
-      
-      // Success - reload to show dashboard
-      window.location.reload();
     } catch (error) {
       // Show error
       if (errorEl) {
         errorEl.textContent = error instanceof Error ? error.message : 'Sign in failed. Please try again.';
         errorEl.classList.remove('hidden');
       }
-    } finally {
-      btnText?.classList.remove('hidden');
-      btnLoading?.classList.add('hidden');
-    }
-  });
-  
-  // Register form handler
-  document.getElementById('register-form')?.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    const form = e.target as HTMLFormElement;
-    const btn = document.getElementById('register-btn');
-    const errorEl = document.getElementById('register-error');
-    const successEl = document.getElementById('register-success');
-    const btnText = btn?.querySelector('.btn-text');
-    const btnLoading = btn?.querySelector('.btn-loading');
-    
-    const firstName = (form.querySelector('#register-first') as HTMLInputElement).value;
-    const lastName = (form.querySelector('#register-last') as HTMLInputElement).value;
-    const email = (form.querySelector('#register-email') as HTMLInputElement).value;
-    const password = (form.querySelector('#register-password') as HTMLInputElement).value;
-    
-    // Show loading state
-    btnText?.classList.add('hidden');
-    btnLoading?.classList.remove('hidden');
-    errorEl?.classList.add('hidden');
-    successEl?.classList.add('hidden');
-    
-    try {
-      const { data, error } = await authClient.signUp.email({
-        email,
-        password,
-        name: `${firstName} ${lastName}`,
-      });
-      
-      if (error) {
-        throw new Error(error.message || 'Registration failed');
-      }
-      
-      // Success - show message and reload
-      if (successEl) {
-        successEl.textContent = 'Account created successfully! Signing you in...';
-        successEl.classList.remove('hidden');
-      }
-      
-      setTimeout(() => window.location.reload(), 1500);
-    } catch (error) {
-      // Show error
-      if (errorEl) {
-        errorEl.textContent = error instanceof Error ? error.message : 'Registration failed. Please try again.';
-        errorEl.classList.remove('hidden');
-      }
-    } finally {
       btnText?.classList.remove('hidden');
       btnLoading?.classList.add('hidden');
     }

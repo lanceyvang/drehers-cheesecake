@@ -7,7 +7,6 @@ export const authClient = createAuthClient({
 
 // Export typed methods for convenience
 export const signIn = authClient.signIn;
-export const signUp = authClient.signUp;
 export const signOut = authClient.signOut;
 export const getSession = authClient.getSession;
 export const useSession = authClient.useSession;

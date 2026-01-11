@@ -13,7 +13,13 @@ export const ALL: APIRoute = async ({ request, locals }) => {
   }
 
   const baseURL = env?.SITE_URL || 'http://localhost:4321';
-  const auth = createAuth(env.DB, { baseURL });
+  const auth = createAuth(env.DB, { 
+    baseURL,
+    env: {
+      GOOGLE_CLIENT_ID: env?.GOOGLE_CLIENT_ID,
+      GOOGLE_CLIENT_SECRET: env?.GOOGLE_CLIENT_SECRET,
+    },
+  });
 
   // Better Auth handles all /api/auth/* routes
   return auth.handler(request);
