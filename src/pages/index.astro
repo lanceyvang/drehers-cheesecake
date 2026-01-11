@@ -60,32 +60,45 @@ import Layout from '../layouts/Layout.astro';
   <!-- Story Section -->
   <section class="py-20 bg-white">
     <div class="container">
-      <div class="max-w-3xl mx-auto">
-        <div class="section-header">
-          <p class="section-subtitle">Our Journey</p>
-          <h2 class="section-title">The Dreher's Story</h2>
+      <div class="grid lg:grid-cols-2 gap-12 items-center">
+        <div class="relative order-2 lg:order-1">
+          <div class="aspect-[4/5] rounded-2xl overflow-hidden">
+            <img 
+              src="/images/products/2f5d8a83-67cb-4ee1-a172-4ad3089ccb6f.png" 
+              alt="Handcrafted cheesecake" 
+              class="w-full h-full object-cover"
+            />
+          </div>
+          <div class="absolute -bottom-6 -right-6 w-48 h-48 bg-berry rounded-2xl -z-10"></div>
         </div>
         
-        <div class="prose prose-lg text-slate mx-auto">
-          <p>
-            What started as a passion for baking in our home kitchen has grown into 
-            Brooklyn's beloved cheesecake destination. At Dreher's, we believe that 
-            every dessert should be a celebration — a moment of pure joy shared with 
-            the people you love.
-          </p>
+        <div class="order-1 lg:order-2">
+          <p class="font-accent text-xl text-gold-dark italic mb-4">Our Journey</p>
+          <h2 class="font-display text-3xl md:text-5xl font-bold text-chocolate mb-6">
+            The Dreher's Story
+          </h2>
           
-          <p>
-            Our journey began with a simple goal: to create the most delicious, 
-            creamy, and memorable cheesecakes in New York. We experimented with 
-            countless recipes, sourced the finest ingredients, and perfected our 
-            craft through years of dedication.
-          </p>
-          
-          <p>
-            Today, we're proud to offer a diverse menu of classic cheesecakes, 
-            stunning custom cakes, and indulgent vegan options — all handcrafted 
-            with the same love and attention to detail that started it all.
-          </p>
+          <div class="space-y-4 text-lg text-slate leading-relaxed">
+            <p>
+              What started as a passion for baking in our home kitchen has grown into 
+              Brooklyn's beloved cheesecake destination. At Dreher's, we believe that 
+              every dessert should be a celebration — a moment of pure joy shared with 
+              the people you love.
+            </p>
+            
+            <p>
+              Our journey began with a simple goal: to create the most delicious, 
+              creamy, and memorable cheesecakes in New York. We experimented with 
+              countless recipes, sourced the finest ingredients, and perfected our 
+              craft through years of dedication.
+            </p>
+            
+            <p>
+              Today, we're proud to offer a diverse menu of classic cheesecakes, 
+              stunning custom cakes, and indulgent vegan options — all handcrafted 
+              with the same love and attention to detail that started it all.
+            </p>
+          </div>
         </div>
       </div>
     </div>
