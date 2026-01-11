@@ -176,6 +176,21 @@ export const prerender = true;
   // Check session on load
   async function checkSession() {
     try {
+      // Check for mock session first
+      const isMockSession = localStorage.getItem('mockSession') === 'true';
+      const storedUser = localStorage.getItem('user');
+      
+      if (isMockSession && storedUser) {
+        const user = JSON.parse(storedUser);
+        loadingEl?.classList.add('hidden');
+        dashboardEl?.classList.remove('hidden');
+        if (userNameEl) {
+          userNameEl.textContent = user.name || user.email?.split('@')[0] || 'there';
+        }
+        return;
+      }
+      
+      // Check real session
       const { data: session } = await authClient.getSession();
       
       loadingEl?.classList.add('hidden');
@@ -203,7 +218,7 @@ export const prerender = true;
   
   checkSession();
   
-  // Google Sign In handler
+  // Mock Google Sign In handler (temporary until real OAuth is set up)
   document.getElementById('google-signin-btn')?.addEventListener('click', async () => {
     const btnText = document.getElementById('google-btn-text');
     const btnLoading = document.getElementById('google-btn-loading');
@@ -214,25 +229,36 @@ export const prerender = true;
     btnLoading?.classList.remove('hidden');
     errorEl?.classList.add('hidden');
     
-    try {
-      await authClient.signIn.social({
-        provider: 'google',
-        callbackURL: '/account',
-      });
-    } catch (error) {
-      // Show error
-      if (errorEl) {
-        errorEl.textContent = error instanceof Error ? error.message : 'Sign in failed. Please try again.';
-        errorEl.classList.remove('hidden');
-      }
-      btnText?.classList.remove('hidden');
-      btnLoading?.classList.add('hidden');
-    }
+    // Simulate network delay
+    await new Promise(r => setTimeout(r, 800));
+    
+    // Mock user data
+    const mockUser = {
+      id: 'mock-user-1',
+      name: 'Test User',
+      email: 'test@example.com',
+      image: null,
+    };
+    
+    // Store mock session
+    localStorage.setItem('user', JSON.stringify(mockUser));
+    localStorage.setItem('mockSession', 'true');
+    
+    // Reload to show dashboard
+    window.location.reload();
   });
   
   // Logout handler
   document.getElementById('logout-btn')?.addEventListener('click', async () => {
     try {
+      // Clear mock session if exists
+      if (localStorage.getItem('mockSession')) {
+        localStorage.removeItem('mockSession');
+        localStorage.removeItem('user');
+        window.location.reload();
+        return;
+      }
+      
       await authClient.signOut();
       localStorage.removeItem('user');
       window.location.reload();
@@ -240,6 +266,7 @@ export const prerender = true;
       console.error('Logout failed:', error);
       // Force logout anyway
       localStorage.removeItem('user');
+      localStorage.removeItem('mockSession');
       window.location.reload();
     }
   });
