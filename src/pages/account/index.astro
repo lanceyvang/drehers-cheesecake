@@ -167,14 +167,15 @@ export const prerender = true;
   const authClient = createAuthClient({
     baseURL: window.location.origin,
   });
-
-  const loadingEl = document.getElementById('auth-loading');
-  const authFormEl = document.getElementById('auth-form');
-  const dashboardEl = document.getElementById('dashboard');
-  const userNameEl = document.getElementById('user-name');
   
   // Check session on load
   async function checkSession() {
+    // Get fresh DOM references (needed for View Transitions)
+    const loadingEl = document.getElementById('auth-loading');
+    const authFormEl = document.getElementById('auth-form');
+    const dashboardEl = document.getElementById('dashboard');
+    const userNameEl = document.getElementById('user-name');
+    
     try {
       // Check for mock session first
       const isMockSession = localStorage.getItem('mockSession') === 'true';
@@ -216,68 +217,73 @@ export const prerender = true;
     }
   }
   
-  checkSession();
-  
-  // Mock Google Sign In handler (temporary until real OAuth is set up)
-  document.getElementById('google-signin-btn')?.addEventListener('click', async () => {
-    const btnText = document.getElementById('google-btn-text');
-    const btnLoading = document.getElementById('google-btn-loading');
-    const errorEl = document.getElementById('auth-error');
+  function init() {
+    checkSession();
     
-    // Show loading state
-    btnText?.classList.add('hidden');
-    btnLoading?.classList.remove('hidden');
-    errorEl?.classList.add('hidden');
+    // Mock Google Sign In handler (temporary until real OAuth is set up)
+    document.getElementById('google-signin-btn')?.addEventListener('click', async () => {
+      const btnText = document.getElementById('google-btn-text');
+      const btnLoading = document.getElementById('google-btn-loading');
+      const errorEl = document.getElementById('auth-error');
+      
+      // Show loading state
+      btnText?.classList.add('hidden');
+      btnLoading?.classList.remove('hidden');
+      errorEl?.classList.add('hidden');
+      
+      // Simulate network delay
+      await new Promise(r => setTimeout(r, 800));
+      
+      // Mock user data
+      const mockUser = {
+        id: 'mock-user-1',
+        name: 'Test User',
+        email: 'test@example.com',
+        image: null,
+      };
+      
+      // Store mock session
+      localStorage.setItem('user', JSON.stringify(mockUser));
+      localStorage.setItem('mockSession', 'true');
+      
+      // Reload to show dashboard
+      window.location.reload();
+    });
     
-    // Simulate network delay
-    await new Promise(r => setTimeout(r, 800));
-    
-    // Mock user data
-    const mockUser = {
-      id: 'mock-user-1',
-      name: 'Test User',
-      email: 'test@example.com',
-      image: null,
-    };
-    
-    // Store mock session
-    localStorage.setItem('user', JSON.stringify(mockUser));
-    localStorage.setItem('mockSession', 'true');
-    
-    // Reload to show dashboard
-    window.location.reload();
-  });
-  
-  // Logout handler
-  document.getElementById('logout-btn')?.addEventListener('click', async () => {
-    try {
-      // Clear mock session if exists
-      if (localStorage.getItem('mockSession')) {
-        localStorage.removeItem('mockSession');
+    // Logout handler
+    document.getElementById('logout-btn')?.addEventListener('click', async () => {
+      try {
+        // Clear mock session if exists
+        if (localStorage.getItem('mockSession')) {
+          localStorage.removeItem('mockSession');
+          localStorage.removeItem('user');
+          window.location.reload();
+          return;
+        }
+        
+        await authClient.signOut();
         localStorage.removeItem('user');
         window.location.reload();
-        return;
+      } catch (error) {
+        console.error('Logout failed:', error);
+        // Force logout anyway
+        localStorage.removeItem('user');
+        localStorage.removeItem('mockSession');
+        window.location.reload();
       }
-      
-      await authClient.signOut();
-      localStorage.removeItem('user');
-      window.location.reload();
-    } catch (error) {
-      console.error('Logout failed:', error);
-      // Force logout anyway
-      localStorage.removeItem('user');
-      localStorage.removeItem('mockSession');
-      window.location.reload();
-    }
-  });
-  
-  // Guest order lookup
-  document.getElementById('guest-lookup-form')?.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const form = e.target as HTMLFormElement;
-    const formData = new FormData(form);
-    const orderNumber = formData.get('orderNumber');
+    });
     
-    window.location.href = `/account/orders/${orderNumber}`;
-  });
+    // Guest order lookup
+    document.getElementById('guest-lookup-form')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const form = e.target as HTMLFormElement;
+      const formData = new FormData(form);
+      const orderNumber = formData.get('orderNumber');
+      
+      window.location.href = `/account/orders/${orderNumber}`;
+    });
+  }
+  
+  // Initialize on page load and View Transitions navigation
+  document.addEventListener('astro:page-load', init);
 </script>
