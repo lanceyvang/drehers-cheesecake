@@ -345,8 +345,8 @@ const categoryNames: Record<string, string> = {
 
   let currentCategory = 'all';
   
-  function filterProducts(category: string) {
-    if (category === currentCategory) return;
+  function filterProducts(category: string, skipAnimation = false) {
+    if (category === currentCategory && !skipAnimation) return;
     
     const productItems = document.querySelectorAll('.product-item');
     const filterButtons = document.querySelectorAll('.filter-btn');
@@ -355,17 +355,6 @@ const categoryNames: Record<string, string> = {
     const emptyState = document.getElementById('empty-state');
     const productsGrid = document.getElementById('products-grid');
     const filterSection = document.getElementById('filter-section');
-    
-    // Scroll to filter section to prevent perceived layout shift
-    if (filterSection) {
-      filterSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-    
-    // Lock the grid height to prevent layout shift during transition
-    if (productsGrid) {
-      const currentHeight = productsGrid.offsetHeight;
-      productsGrid.style.minHeight = `${currentHeight}px`;
-    }
     
     // Update button states
     filterButtons.forEach(btn => {
@@ -379,17 +368,33 @@ const categoryNames: Record<string, string> = {
       }
     });
     
-    // Update title and description with fade
+    // Update title and description
     if (pageTitle && pageDescription) {
-      pageTitle.style.opacity = '0';
-      pageDescription.style.opacity = '0';
-      
-      setTimeout(() => {
-        pageTitle.textContent = categoryNames[category] || 'Products';
-        pageDescription.textContent = categoryDescriptions[category] || '';
-        pageTitle.style.opacity = '1';
-        pageDescription.style.opacity = '1';
-      }, 150);
+      pageTitle.textContent = categoryNames[category] || 'Products';
+      pageDescription.textContent = categoryDescriptions[category] || '';
+    }
+    
+    if (skipAnimation) {
+      // Instant filter without animation (for page load)
+      productItems.forEach(item => {
+        const itemCategory = (item as HTMLElement).dataset.category;
+        const shouldShow = category === 'all' || itemCategory === category;
+        item.classList.toggle('hidden', !shouldShow);
+        item.classList.remove('filtering-out');
+      });
+      currentCategory = category;
+      return;
+    }
+    
+    // Scroll to filter section to prevent perceived layout shift
+    if (filterSection) {
+      filterSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    
+    // Lock the grid height to prevent layout shift during transition
+    if (productsGrid) {
+      const currentHeight = productsGrid.offsetHeight;
+      productsGrid.style.minHeight = `${currentHeight}px`;
     }
     
     // Animate out current items
@@ -447,13 +452,23 @@ const categoryNames: Record<string, string> = {
     history.pushState({ category }, '', url);
   }
   
-  // Initialize filter buttons
-  document.querySelectorAll('.filter-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const category = (btn as HTMLButtonElement).dataset.category || 'all';
-      filterProducts(category);
+  function initFilters() {
+    // Reset state on page load
+    currentCategory = 'all';
+    
+    // Initialize filter buttons
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const category = (btn as HTMLButtonElement).dataset.category || 'all';
+        filterProducts(category);
+      });
     });
-  });
+    
+    // Check URL for initial category
+    const params = new URLSearchParams(window.location.search);
+    const initialCategory = params.get('category') || 'all';
+    filterProducts(initialCategory, true);
+  }
   
   // Handle browser back/forward
   window.addEventListener('popstate', (event) => {
@@ -461,12 +476,6 @@ const categoryNames: Record<string, string> = {
     filterProducts(category);
   });
   
-  // Check URL on load for initial category
-  document.addEventListener('DOMContentLoaded', () => {
-    const params = new URLSearchParams(window.location.search);
-    const initialCategory = params.get('category') || 'all';
-    if (initialCategory !== 'all') {
-      filterProducts(initialCategory);
-    }
-  });
+  // Initialize on page load and View Transitions navigation
+  document.addEventListener('astro:page-load', initFilters);
 </script>
